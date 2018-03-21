@@ -1,64 +1,64 @@
 /*********************************************************************************************************
-* Ä£¿éÃû³Æ: OLED.h
-* Õª    Òª: OLEDÇý¶¯ 
-* µ±Ç°°æ±¾: 1.0.0
-* ×÷    Õß: 
-* Íê³ÉÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ 
-* ÄÚ    ÈÝ:
-* ×¢    Òâ: OLEDÈ¡Ä£Ê¹ÓÃµÄÊÇPCtoLCD2002ÍêÃÀ°æÈí¼þ                                                                  
+* æ¨¡å—åç§°: OLED.h
+* æ‘˜    è¦: OLEDé©±åŠ¨ 
+* å½“å‰ç‰ˆæœ¬: 1.0.0
+* ä½œ    è€…: 666immortal
+* å®Œæˆæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥ 
+* å†…    å®¹:
+* æ³¨    æ„: OLEDå–æ¨¡ä½¿ç”¨çš„æ˜¯PCtoLCD2002å®Œç¾Žç‰ˆè½¯ä»¶                                                                  
 **********************************************************************************************************
-* È¡´ú°æ±¾:
-* ×÷    Õß:
-* Íê³ÉÈÕÆÚ: 
-* ÐÞ¸ÄÄÚÈÝ:
-* ÐÞ¸ÄÎÄ¼þ: 
+* å–ä»£ç‰ˆæœ¬:
+* ä½œ    è€…:
+* å®Œæˆæ—¥æœŸ: 
+* ä¿®æ”¹å†…å®¹:
+* ä¿®æ”¹æ–‡ä»¶: 
 *********************************************************************************************************/
 #ifndef _OLED_H_
 #define _OLED_H_
  
 /*********************************************************************************************************
-*                                              °üº¬Í·ÎÄ¼þ
+*                                              åŒ…å«å¤´æ–‡ä»¶
 *********************************************************************************************************/
 #include  "DataType.h" 
 
 /*********************************************************************************************************
-*                                              ºê¶¨Òå
+*                                              å®å®šä¹‰
 *********************************************************************************************************/ 
-#define USER_DEFINE_OLED_CS_GPIO_PORT    GPIOB                     //ÓÃ»§¶¨ÒåOLED.CSµÄ¶Ë¿Ú
-#define USER_DEFINE_OLED_CS_GPIO_PIN     GPIO_Pin_12               //ÓÃ»§¶¨ÒåOLED.CSµÄÒý½Å
-#define USER_DEFINE_OLED_CS_GPIO_CLK     RCC_APB2Periph_GPIOB      //ÓÃ»§¶¨ÒåOLED.CSµÄÊ±ÖÓ
+#define USER_DEFINE_OLED_CS_GPIO_PORT    GPIOB                     //ç”¨æˆ·å®šä¹‰OLED.CSçš„ç«¯å£
+#define USER_DEFINE_OLED_CS_GPIO_PIN     GPIO_Pin_12               //ç”¨æˆ·å®šä¹‰OLED.CSçš„å¼•è„š
+#define USER_DEFINE_OLED_CS_GPIO_CLK     RCC_APB2Periph_GPIOB      //ç”¨æˆ·å®šä¹‰OLED.CSçš„æ—¶é’Ÿ
 
-#define USER_DEFINE_OLED_RES_GPIO_PORT   GPIOB                     //ÓÃ»§¶¨ÒåOLED.RESµÄ¶Ë¿Ú
-#define USER_DEFINE_OLED_RES_GPIO_PIN    GPIO_Pin_14               //ÓÃ»§¶¨ÒåOLED.RESµÄÒý½Å
-#define USER_DEFINE_OLED_RES_GPIO_CLK    RCC_APB2Periph_GPIOB      //ÓÃ»§¶¨ÒåOLED.RESµÄÊ±ÖÓ
+#define USER_DEFINE_OLED_RES_GPIO_PORT   GPIOB                     //ç”¨æˆ·å®šä¹‰OLED.RESçš„ç«¯å£
+#define USER_DEFINE_OLED_RES_GPIO_PIN    GPIO_Pin_14               //ç”¨æˆ·å®šä¹‰OLED.RESçš„å¼•è„š
+#define USER_DEFINE_OLED_RES_GPIO_CLK    RCC_APB2Periph_GPIOB      //ç”¨æˆ·å®šä¹‰OLED.RESçš„æ—¶é’Ÿ
 
-#define USER_DEFINE_OLED_DC_GPIO_PORT    GPIOC                     //ÓÃ»§¶¨ÒåOLED.DCµÄ¶Ë¿Ú
-#define USER_DEFINE_OLED_DC_GPIO_PIN     GPIO_Pin_3                //ÓÃ»§¶¨ÒåOLED.DCµÄÒý½Å
-#define USER_DEFINE_OLED_DC_GPIO_CLK     RCC_APB2Periph_GPIOC      //ÓÃ»§¶¨ÒåOLED.DCµÄÊ±ÖÓ
+#define USER_DEFINE_OLED_DC_GPIO_PORT    GPIOC                     //ç”¨æˆ·å®šä¹‰OLED.DCçš„ç«¯å£
+#define USER_DEFINE_OLED_DC_GPIO_PIN     GPIO_Pin_3                //ç”¨æˆ·å®šä¹‰OLED.DCçš„å¼•è„š
+#define USER_DEFINE_OLED_DC_GPIO_CLK     RCC_APB2Periph_GPIOC      //ç”¨æˆ·å®šä¹‰OLED.DCçš„æ—¶é’Ÿ
                                          
-#define USER_DEFINE_OLED_SCLK_GPIO_PORT  GPIOB                     //ÓÃ»§¶¨ÒåOLED.SCLKµÄ¶Ë¿Ú
-#define USER_DEFINE_OLED_SCLK_GPIO_PIN   GPIO_Pin_13               //ÓÃ»§¶¨ÒåOLED.SCLKµÄÒý½Å
-#define USER_DEFINE_OLED_SCLK_GPIO_CLK   RCC_APB2Periph_GPIOB      //ÓÃ»§¶¨ÒåOLED.SCLKµÄÊ±ÖÓ
+#define USER_DEFINE_OLED_SCLK_GPIO_PORT  GPIOB                     //ç”¨æˆ·å®šä¹‰OLED.SCLKçš„ç«¯å£
+#define USER_DEFINE_OLED_SCLK_GPIO_PIN   GPIO_Pin_13               //ç”¨æˆ·å®šä¹‰OLED.SCLKçš„å¼•è„š
+#define USER_DEFINE_OLED_SCLK_GPIO_CLK   RCC_APB2Periph_GPIOB      //ç”¨æˆ·å®šä¹‰OLED.SCLKçš„æ—¶é’Ÿ
 
-#define USER_DEFINE_OLED_SDIN_GPIO_PORT  GPIOB                     //ÓÃ»§¶¨ÒåOLED.SDINµÄ¶Ë¿Ú
-#define USER_DEFINE_OLED_SDIN_GPIO_PIN   GPIO_Pin_15               //ÓÃ»§¶¨ÒåOLED.SDINµÄÒý½Å
-#define USER_DEFINE_OLED_SDIN_GPIO_CLK   RCC_APB2Periph_GPIOB      //ÓÃ»§¶¨ÒåOLED.SDINµÄÊ±ÖÓ
+#define USER_DEFINE_OLED_SDIN_GPIO_PORT  GPIOB                     //ç”¨æˆ·å®šä¹‰OLED.SDINçš„ç«¯å£
+#define USER_DEFINE_OLED_SDIN_GPIO_PIN   GPIO_Pin_15               //ç”¨æˆ·å®šä¹‰OLED.SDINçš„å¼•è„š
+#define USER_DEFINE_OLED_SDIN_GPIO_CLK   RCC_APB2Periph_GPIOB      //ç”¨æˆ·å®šä¹‰OLED.SDINçš„æ—¶é’Ÿ
 
 /*********************************************************************************************************
-*                                              Ã¶¾Ù½á¹¹Ìå¶¨Òå
+*                                              æžšä¸¾ç»“æž„ä½“å®šä¹‰
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              APIº¯ÊýÉùÃ÷
+*                                              APIå‡½æ•°å£°æ˜Ž
 *********************************************************************************************************/	    
-void  InitOLED(void);           //³õÊ¼»¯OLED
-void  OLEDDisplayOn(void);      //¿ªÆôOLEDÏÔÊ¾
-void  OLEDDisplayOff(void);     //¹Ø±ÕOLEDÏÔÊ¾
-void  OLEDRefreshGRAM(void);    //¸üÐÂOLED GRAM
+void  InitOLED(void);           //åˆå§‹åŒ–OLED
+void  OLEDDisplayOn(void);      //å¼€å¯OLEDæ˜¾ç¤º
+void  OLEDDisplayOff(void);     //å…³é—­OLEDæ˜¾ç¤º
+void  OLEDRefreshGRAM(void);    //æ›´æ–°OLED GRAM
 
-void  OLEDClear(void);                                       //Çå³ýOLEDÆÁÄÚÈÝ
-void  OLEDShowNum(u8 x, u8 y, u32 num, u8 len, u8 size);     //ÔÚOLEDÆÁÉÏÖ¸¶¨Î»ÖÃÏÔÊ¾Êý×Ö
-void  OLEDShowChar(u8 x, u8 y, u8 chr, u8 size, u8 mode);    //ÔÚOLEDÆÁÉÏÖ¸¶¨Î»ÖÃÏÔÊ¾×Ö·û
-void  OLEDShowString(u8 x, u8 y, const u8* p);               //ÔÚOLEDÆÁÉÏÖ¸¶¨Î»ÖÃÏÔÊ¾×Ö·û´®
+void  OLEDClear(void);                                       //æ¸…é™¤OLEDå±å†…å®¹
+void  OLEDShowNum(u8 x, u8 y, u32 num, u8 len, u8 size);     //åœ¨OLEDå±ä¸ŠæŒ‡å®šä½ç½®æ˜¾ç¤ºæ•°å­—
+void  OLEDShowChar(u8 x, u8 y, u8 chr, u8 size, u8 mode);    //åœ¨OLEDå±ä¸ŠæŒ‡å®šä½ç½®æ˜¾ç¤ºå­—ç¬¦
+void  OLEDShowString(u8 x, u8 y, const u8* p);               //åœ¨OLEDå±ä¸ŠæŒ‡å®šä½ç½®æ˜¾ç¤ºå­—ç¬¦ä¸²
 
 #endif  
