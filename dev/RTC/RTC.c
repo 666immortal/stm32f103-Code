@@ -1,362 +1,362 @@
 /*********************************************************************************************************
-* Ä£¿éÃû³Æ: RTC.c
-* Õª    Òª: 
-* µ±Ç°°æ±¾: 1.0
-* ×÷    Õß: 
-* Íê³ÉÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ÄÚ    ÈÝ:
-* ×¢    Òâ: none                                                                  
+* æ¨¡å—åç§°: RTC.c
+* æ‘˜    è¦: 
+* å½“å‰ç‰ˆæœ¬: 1.0
+* ä½œ    è€…: 666immortal
+* å®Œæˆæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* å†…    å®¹:
+* æ³¨    æ„: none                                                                  
 **********************************************************************************************************
-* È¡´ú°æ±¾: 
-* ×÷    Õß:
-* Íê³ÉÈÕÆÚ: 
-* ÐÞ¸ÄÄÚÈÝ:
-* ÐÞ¸ÄÎÄ¼þ: 
+* å–ä»£ç‰ˆæœ¬: 
+* ä½œ    è€…:
+* å®Œæˆæ—¥æœŸ: 
+* ä¿®æ”¹å†…å®¹:
+* ä¿®æ”¹æ–‡ä»¶: 
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              °üº¬Í·ÎÄ¼þ
+*                                              åŒ…å«å¤´æ–‡ä»¶
 *********************************************************************************************************/
 #include "RTC.h" 		    
 #include "SysTick.h"
 
 /*********************************************************************************************************
-*                                              ºê¶¨Òå
+*                                              å®å®šä¹‰
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿±äÁ¿
+*                                              å†…éƒ¨å˜é‡
 *********************************************************************************************************/
-StructCalendar calendar;                                         //¶¨ÒåÊ±¼ä½á¹¹Ìåcalendar£¬ÓÃÀ´´æ·ÅÈÕÆÚºÍÊ±¼ä
+StructCalendar calendar;                                         //å®šä¹‰æ—¶é—´ç»“æž„ä½“calendarï¼Œç”¨æ¥å­˜æ”¾æ—¥æœŸå’Œæ—¶é—´
 
-const u8 monthTable[12]  = {31,28,31,30,31,30,31,31,30,31,30,31};//Æ½ÄêµÄÔÂ·ÝÈÕÆÚ±í
-const u8 weekTable[12] = {0,3,3,6,1,4,6,2,5,0,3,5};              //ÔÂÐÞÕýÊý¾Ý±í	  
-
-/*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊýÉùÃ÷
-*********************************************************************************************************/
-static void ConfigRTC(void);                              //ÅäÖÃRCCµÄNVIC
+const u8 monthTable[12]  = {31,28,31,30,31,30,31,31,30,31,30,31};//å¹³å¹´çš„æœˆä»½æ—¥æœŸè¡¨
+const u8 weekTable[12] = {0,3,3,6,1,4,6,2,5,0,3,5};              //æœˆä¿®æ­£æ•°æ®è¡¨	  
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊýÊµÏÖ
+*                                              å†…éƒ¨å‡½æ•°å£°æ˜Ž
+*********************************************************************************************************/
+static void ConfigRTC(void);                              //é…ç½®RCCçš„NVIC
+
+/*********************************************************************************************************
+*                                              å†…éƒ¨å‡½æ•°å®žçŽ°
 *********************************************************************************************************/
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: ConfigRTC
-* º¯Êý¹¦ÄÜ: ÅäÖÃRTCµÄÖÐ¶Ï·þÎñº¯Êý
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ:  
+* å‡½æ•°åç§°: ConfigRTC
+* å‡½æ•°åŠŸèƒ½: é…ç½®RTCçš„ä¸­æ–­æœåŠ¡å‡½æ•°
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„:  
 *********************************************************************************************************/
 static void ConfigRTC(void)
 {	
-  NVIC_InitTypeDef NVIC_InitStructure;//¶¨Òå½á¹¹ÌåNVIC_InitStructure£¬ÓÃÀ´ÅäÖÃRTCµÄNVIC
-	NVIC_InitStructure.NVIC_IRQChannel = RTC_IRQn;		        //RTCÈ«¾ÖÖÐ¶Ï
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;	//ÏÈÕ¼ÓÅÏÈ¼¶1Î»,´ÓÓÅÏÈ¼¶3Î»
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;	      //ÏÈÕ¼ÓÅÏÈ¼¶0Î»,´ÓÓÅÏÈ¼¶4Î»
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;		        //Ê¹ÄÜ¸ÃÍ¨µÀÖÐ¶Ï
-	NVIC_Init(&NVIC_InitStructure);     //¸ù¾ÝNVIC_InitStructÖÐÖ¸¶¨µÄ²ÎÊý³õÊ¼»¯ÍâÉèNVIC¼Ä´æÆ÷
+  NVIC_InitTypeDef NVIC_InitStructure;//å®šä¹‰ç»“æž„ä½“NVIC_InitStructureï¼Œç”¨æ¥é…ç½®RTCçš„NVIC
+	NVIC_InitStructure.NVIC_IRQChannel = RTC_IRQn;		        //RTCå…¨å±€ä¸­æ–­
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;	//å…ˆå ä¼˜å…ˆçº§1ä½,ä»Žä¼˜å…ˆçº§3ä½
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;	      //å…ˆå ä¼˜å…ˆçº§0ä½,ä»Žä¼˜å…ˆçº§4ä½
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;		        //ä½¿èƒ½è¯¥é€šé“ä¸­æ–­
+	NVIC_Init(&NVIC_InitStructure);     //æ ¹æ®NVIC_InitStructä¸­æŒ‡å®šçš„å‚æ•°åˆå§‹åŒ–å¤–è®¾NVICå¯„å­˜å™¨
 }
 
 /*********************************************************************************************************
-*                                              APIº¯ÊýÊµÏÖ
+*                                              APIå‡½æ•°å®žçŽ°
 *********************************************************************************************************/
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: InitRTC
-* º¯Êý¹¦ÄÜ: ÊµÊ±Ê±ÖÓÅäÖÃ£¬³õÊ¼»¯RTCÊ±ÖÓ,Í¬Ê±¼ì²âÊ±ÖÓÊÇ·ñ¹¤×÷Õý³£
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: 0£ºÕý³££»1£ºÒì³£
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: BKP->DR1ÓÃÓÚ±£´æÊÇ·ñµÚÒ»´ÎÅäÖÃµÄÉèÖÃ
+* å‡½æ•°åç§°: InitRTC
+* å‡½æ•°åŠŸèƒ½: å®žæ—¶æ—¶é’Ÿé…ç½®ï¼Œåˆå§‹åŒ–RTCæ—¶é’Ÿ,åŒæ—¶æ£€æµ‹æ—¶é’Ÿæ˜¯å¦å·¥ä½œæ­£å¸¸
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: 0ï¼šæ­£å¸¸ï¼›1ï¼šå¼‚å¸¸
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: BKP->DR1ç”¨äºŽä¿å­˜æ˜¯å¦ç¬¬ä¸€æ¬¡é…ç½®çš„è®¾ç½®
 *********************************************************************************************************/
 u8 InitRTC(void)
 {
-	u8 temp=0;                                  //¼ì²é´ÎÊý±êÖ¾Î»
+	u8 temp=0;                                  //æ£€æŸ¥æ¬¡æ•°æ ‡å¿—ä½
   
-  //¼ì²éÊÇ²»ÊÇµÚÒ»´ÎÅäÖÃÊ±ÖÓ
-	if (BKP_ReadBackupRegister(BKP_DR1) != 0x5050)//´ÓÖ¸¶¨µÄºó±¸¼Ä´æÆ÷ÖÐ¶Á³öÊý¾Ý:¶Á³öÁËÓëÐ´ÈëµÄÖ¸¶¨Êý¾Ý²»Ïà·û
+  //æ£€æŸ¥æ˜¯ä¸æ˜¯ç¬¬ä¸€æ¬¡é…ç½®æ—¶é’Ÿ
+	if (BKP_ReadBackupRegister(BKP_DR1) != 0x5050)//ä»ŽæŒ‡å®šçš„åŽå¤‡å¯„å­˜å™¨ä¸­è¯»å‡ºæ•°æ®:è¯»å‡ºäº†ä¸Žå†™å…¥çš„æŒ‡å®šæ•°æ®ä¸ç›¸ç¬¦
 	{	 			
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);//Ê¹ÄÜPWRºÍBKPÍâÉèÊ±ÖÓ   
-		PWR_BackupAccessCmd(ENABLE);	            //Ê¹ÄÜºó±¸¼Ä´æÆ÷·ÃÎÊ 
-		BKP_DeInit();	                            //¸´Î»±¸·ÝÇøÓò 	
-		RCC_LSEConfig(RCC_LSE_ON);	              //ÉèÖÃÍâ²¿µÍËÙ¾§Õñ(LSE),Ê¹ÓÃÍâÉèµÍËÙ¾§Õñ
+		RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);//ä½¿èƒ½PWRå’ŒBKPå¤–è®¾æ—¶é’Ÿ   
+		PWR_BackupAccessCmd(ENABLE);	            //ä½¿èƒ½åŽå¤‡å¯„å­˜å™¨è®¿é—® 
+		BKP_DeInit();	                            //å¤ä½å¤‡ä»½åŒºåŸŸ 	
+		RCC_LSEConfig(RCC_LSE_ON);	              //è®¾ç½®å¤–éƒ¨ä½Žé€Ÿæ™¶æŒ¯(LSE),ä½¿ç”¨å¤–è®¾ä½Žé€Ÿæ™¶æŒ¯
     
-		while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET)	//¼ì²éÖ¸¶¨µÄRCC±êÖ¾Î»ÉèÖÃÓë·ñ,µÈ´ýµÍËÙ¾§Õñ¾ÍÐ÷
+		while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET)	//æ£€æŸ¥æŒ‡å®šçš„RCCæ ‡å¿—ä½è®¾ç½®ä¸Žå¦,ç­‰å¾…ä½Žé€Ÿæ™¶æŒ¯å°±ç»ª
 		{
-      temp++;                                 //Ã¿¼ì²éÒ»´Î£¬¼ì²â´ÎÊý±êÖ¾Î»¼Ó1
-      DelayNms(10);                           //ÑÓÊ±10ms
+      temp++;                                 //æ¯æ£€æŸ¥ä¸€æ¬¡ï¼Œæ£€æµ‹æ¬¡æ•°æ ‡å¿—ä½åŠ 1
+      DelayNms(10);                           //å»¶æ—¶10ms
 		}
     
-		if(temp >= 250)                           //Èç¹û¼ì²éÖ¸¶¨µÄRCC±êÖ¾Î»µÄ´ÎÊý¹ý¶à
+		if(temp >= 250)                           //å¦‚æžœæ£€æŸ¥æŒ‡å®šçš„RCCæ ‡å¿—ä½çš„æ¬¡æ•°è¿‡å¤š
     {
-      return 1;                               //³õÊ¼»¯Ê±ÖÓÊ§°Ü,¾§ÕñÓÐÎÊÌâ	    
+      return 1;                               //åˆå§‹åŒ–æ—¶é’Ÿå¤±è´¥,æ™¶æŒ¯æœ‰é—®é¢˜	    
     }
     
-		RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);		//ÉèÖÃRTCÊ±ÖÓ(RTCCLK),Ñ¡ÔñLSE×÷ÎªRTCÊ±ÖÓ    
-		RCC_RTCCLKCmd(ENABLE);	                  //Ê¹ÄÜRTCÊ±ÖÓ  
-		RTC_WaitForLastTask();	                  //µÈ´ý×î½üÒ»´Î¶ÔRTC¼Ä´æÆ÷µÄÐ´²Ù×÷Íê³É
-		RTC_WaitForSynchro();		                  //µÈ´ýRTC¼Ä´æÆ÷Í¬²½  
-		RTC_ITConfig(RTC_IT_SEC, ENABLE);		      //Ê¹ÄÜRTCÃëÖÐ¶Ï
-		RTC_WaitForLastTask();	                  //µÈ´ý×î½üÒ»´Î¶ÔRTC¼Ä´æÆ÷µÄÐ´²Ù×÷Íê³É
-		RTC_EnterConfigMode();                    // ÔÊÐíÅäÖÃ	
-		RTC_SetPrescaler(32767);                  //ÉèÖÃRTCÔ¤·ÖÆµµÄÖµ
-		RTC_WaitForLastTask();	                  //µÈ´ý×î½üÒ»´Î¶ÔRTC¼Ä´æÆ÷µÄÐ´²Ù×÷Íê³É
-		RTC_ExitConfigMode();                     //ÍË³öÅäÖÃÄ£Ê½  
-		BKP_WriteBackupRegister(BKP_DR1, 0X5050);	//ÏòÖ¸¶¨µÄºó±¸¼Ä´æÆ÷ÖÐÐ´ÈëÓÃ»§³ÌÐòÊý¾Ý
+		RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);		//è®¾ç½®RTCæ—¶é’Ÿ(RTCCLK),é€‰æ‹©LSEä½œä¸ºRTCæ—¶é’Ÿ    
+		RCC_RTCCLKCmd(ENABLE);	                  //ä½¿èƒ½RTCæ—¶é’Ÿ  
+		RTC_WaitForLastTask();	                  //ç­‰å¾…æœ€è¿‘ä¸€æ¬¡å¯¹RTCå¯„å­˜å™¨çš„å†™æ“ä½œå®Œæˆ
+		RTC_WaitForSynchro();		                  //ç­‰å¾…RTCå¯„å­˜å™¨åŒæ­¥  
+		RTC_ITConfig(RTC_IT_SEC, ENABLE);		      //ä½¿èƒ½RTCç§’ä¸­æ–­
+		RTC_WaitForLastTask();	                  //ç­‰å¾…æœ€è¿‘ä¸€æ¬¡å¯¹RTCå¯„å­˜å™¨çš„å†™æ“ä½œå®Œæˆ
+		RTC_EnterConfigMode();                    // å…è®¸é…ç½®	
+		RTC_SetPrescaler(32767);                  //è®¾ç½®RTCé¢„åˆ†é¢‘çš„å€¼
+		RTC_WaitForLastTask();	                  //ç­‰å¾…æœ€è¿‘ä¸€æ¬¡å¯¹RTCå¯„å­˜å™¨çš„å†™æ“ä½œå®Œæˆ
+		RTC_ExitConfigMode();                     //é€€å‡ºé…ç½®æ¨¡å¼  
+		BKP_WriteBackupRegister(BKP_DR1, 0X5050);	//å‘æŒ‡å®šçš„åŽå¤‡å¯„å­˜å™¨ä¸­å†™å…¥ç”¨æˆ·ç¨‹åºæ•°æ®
 	}
-	else                                        //ÏµÍ³¼ÌÐø¼ÆÊ±
+	else                                        //ç³»ç»Ÿç»§ç»­è®¡æ—¶
 	{
-    RTC_WaitForSynchro();	                    //µÈ´ý×î½üÒ»´Î¶ÔRTC¼Ä´æÆ÷µÄÐ´²Ù×÷Íê³É
-    RTC_ITConfig(RTC_IT_SEC, ENABLE);	        //Ê¹ÄÜRTCÃëÖÐ¶Ï
-    RTC_WaitForLastTask();	                  //µÈ´ý×î½üÒ»´Î¶ÔRTC¼Ä´æÆ÷µÄÐ´²Ù×÷Íê³É
+    RTC_WaitForSynchro();	                    //ç­‰å¾…æœ€è¿‘ä¸€æ¬¡å¯¹RTCå¯„å­˜å™¨çš„å†™æ“ä½œå®Œæˆ
+    RTC_ITConfig(RTC_IT_SEC, ENABLE);	        //ä½¿èƒ½RTCç§’ä¸­æ–­
+    RTC_WaitForLastTask();	                  //ç­‰å¾…æœ€è¿‘ä¸€æ¬¡å¯¹RTCå¯„å­˜å™¨çš„å†™æ“ä½œå®Œæˆ
 	}
   
-	ConfigRTC();                                //RCTÖÐ¶Ï·Ö×éÉèÖÃ		    				     
-	GetRTC();                                   //¸üÐÂÊ±¼ä	
+	ConfigRTC();                                //RCTä¸­æ–­åˆ†ç»„è®¾ç½®		    				     
+	GetRTC();                                   //æ›´æ–°æ—¶é—´	
     
-	return 0;                                   //ÅäÖÃÕý³££¬Ê±ÖÓ¿ÉÒÔÕý³£¹¤×÷
+	return 0;                                   //é…ç½®æ­£å¸¸ï¼Œæ—¶é’Ÿå¯ä»¥æ­£å¸¸å·¥ä½œ
 }		 	
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: RTC_IRQHandler
-* º¯Êý¹¦ÄÜ: RTCÊ±ÖÓÖÐ¶Ï£¬Ã¿Ãë´¥·¢Ò»´Î 
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: RTC_IRQHandler
+* å‡½æ•°åŠŸèƒ½: RTCæ—¶é’Ÿä¸­æ–­ï¼Œæ¯ç§’è§¦å‘ä¸€æ¬¡ 
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 void RTC_IRQHandler(void)
 {		 
-	if (RTC_GetITStatus(RTC_IT_SEC) != RESET)     //¼ì²éÃëÖÐ¶ÏÊÇ·ñ·¢Éú
+	if (RTC_GetITStatus(RTC_IT_SEC) != RESET)     //æ£€æŸ¥ç§’ä¸­æ–­æ˜¯å¦å‘ç”Ÿ
 	{							
-		GetRTC();                                   //¸üÐÂÊ±¼ä   
+		GetRTC();                                   //æ›´æ–°æ—¶é—´   
  	}
   
-	if(RTC_GetITStatus(RTC_IT_ALR)!= RESET)       //¼ì²éÄÖÖÓÖÐ¶ÏÊÇ·ñ·¢Éú
+	if(RTC_GetITStatus(RTC_IT_ALR)!= RESET)       //æ£€æŸ¥é—¹é’Ÿä¸­æ–­æ˜¯å¦å‘ç”Ÿ
 	{
-		RTC_ClearITPendingBit(RTC_IT_ALR);		      //Çå³ýÄÖÖÓÖÐ¶Ï
+		RTC_ClearITPendingBit(RTC_IT_ALR);		      //æ¸…é™¤é—¹é’Ÿä¸­æ–­
   } 
 	
-	RTC_ClearITPendingBit(RTC_IT_SEC|RTC_IT_OW);  //Çå³ýÃëÖÐ¶ÏºÍÒç³öÖÐ¶Ï
-	RTC_WaitForLastTask();	  	                  //µÈ´ý×î½üÒ»´Î¶ÔRTC¼Ä´æÆ÷µÄÐ´²Ù×÷Íê³É   						 	   	 
+	RTC_ClearITPendingBit(RTC_IT_SEC|RTC_IT_OW);  //æ¸…é™¤ç§’ä¸­æ–­å’Œæº¢å‡ºä¸­æ–­
+	RTC_WaitForLastTask();	  	                  //ç­‰å¾…æœ€è¿‘ä¸€æ¬¡å¯¹RTCå¯„å­˜å™¨çš„å†™æ“ä½œå®Œæˆ   						 	   	 
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: JudgeLeapYear
-* º¯Êý¹¦ÄÜ: ÅÐ¶ÏÊÇ·ñÊÇÈòÄêº¯Êý
-* ÊäÈë²ÎÊý: Äê·Ý
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: ¸ÃÄê·ÝÊÇ²»ÊÇÈòÄê.1£ºÊÇ.0£º²»ÊÇ
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: //ÔÂ·Ý   1  2  3  4  5  6  7  8  9  10 11 12
-            //ÈòÄê   31 29 31 30 31 30 31 31 30 31 30 31
-            //·ÇÈòÄê 31 28 31 30 31 30 31 31 30 31 30 31
+* å‡½æ•°åç§°: JudgeLeapYear
+* å‡½æ•°åŠŸèƒ½: åˆ¤æ–­æ˜¯å¦æ˜¯é—°å¹´å‡½æ•°
+* è¾“å…¥å‚æ•°: å¹´ä»½
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: è¯¥å¹´ä»½æ˜¯ä¸æ˜¯é—°å¹´.1ï¼šæ˜¯.0ï¼šä¸æ˜¯
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: //æœˆä»½   1  2  3  4  5  6  7  8  9  10 11 12
+            //é—°å¹´   31 29 31 30 31 30 31 31 30 31 30 31
+            //éžé—°å¹´ 31 28 31 30 31 30 31 31 30 31 30 31
 *********************************************************************************************************/
 u8 JudgeLeapYear(u16 year)
 {			  
-	if(year % 4 == 0)       //±ØÐëÄÜ±»4Õû³ý
+	if(year % 4 == 0)       //å¿…é¡»èƒ½è¢«4æ•´é™¤
 	{ 
-		if(year % 100 == 0)   //ÅÐ¶ÏÊÇ²»ÊÇÒÔ00½áÎ²
+		if(year % 100 == 0)   //åˆ¤æ–­æ˜¯ä¸æ˜¯ä»¥00ç»“å°¾
 		{ 
-			if(year % 400 == 0) //Èç¹ûÊÇÒÔ00½áÎ²£¬ÅÐ¶ÏÄÜ²»ÄÜ±»400Õû³ý
+			if(year % 400 == 0) //å¦‚æžœæ˜¯ä»¥00ç»“å°¾ï¼Œåˆ¤æ–­èƒ½ä¸èƒ½è¢«400æ•´é™¤
       {
-        return 1;         //Èç¹ûÒÔ00½áÎ²,»¹ÒªÄÜ±»400Õû³ý£¬¸ÃÄê·Ý²ÅÊÇÈòÄê
+        return 1;         //å¦‚æžœä»¥00ç»“å°¾,è¿˜è¦èƒ½è¢«400æ•´é™¤ï¼Œè¯¥å¹´ä»½æ‰æ˜¯é—°å¹´
       }
 			else 
       {
-        return 0;         //ÒÔ00½áÎ²µ«²»ÄÜ±»400Õû³ý£¬¸ÃÄê·Ý²»ÊÇÈòÄê
+        return 0;         //ä»¥00ç»“å°¾ä½†ä¸èƒ½è¢«400æ•´é™¤ï¼Œè¯¥å¹´ä»½ä¸æ˜¯é—°å¹´
       }
 		}
     else 
     {
-      return 1;           //²»ÊÇÒÔ00½áÎ²¶øÇÒÄÜ±»4Õû³ý£¬¸ÃÄê·ÝÊÇÈòÄê 
+      return 1;           //ä¸æ˜¯ä»¥00ç»“å°¾è€Œä¸”èƒ½è¢«4æ•´é™¤ï¼Œè¯¥å¹´ä»½æ˜¯é—°å¹´ 
     }
 	}
   else 
   {
-    return 0;	            //²»ÄÜ±»4Õû³ý£¬¸ÃÄê·Ý²»ÊÇÈòÄê
+    return 0;	            //ä¸èƒ½è¢«4æ•´é™¤ï¼Œè¯¥å¹´ä»½ä¸æ˜¯é—°å¹´
   }
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: SetRTC
-* º¯Êý¹¦ÄÜ: ÉèÖÃÊ±ÖÓ£¬°ÑÊäÈëµÄÊ±ÖÓ×ª»»ÎªÃëÖÓ£¬ÒÔ1970Äê1ÔÂ1ÈÕÎª»ù×¼
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: 0,³É¹¦;ÆäËû:´íÎó´úÂë.
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 1970~2099ÄêÎªºÏ·¨Äê·Ý
+* å‡½æ•°åç§°: SetRTC
+* å‡½æ•°åŠŸèƒ½: è®¾ç½®æ—¶é’Ÿï¼ŒæŠŠè¾“å…¥çš„æ—¶é’Ÿè½¬æ¢ä¸ºç§’é’Ÿï¼Œä»¥1970å¹´1æœˆ1æ—¥ä¸ºåŸºå‡†
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: 0,æˆåŠŸ;å…¶ä»–:é”™è¯¯ä»£ç .
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 1970~2099å¹´ä¸ºåˆæ³•å¹´ä»½
 *********************************************************************************************************/							 
 u8 SetRTC(u16 year, u8 mon, u8 day, u8 hour, u8 min,u8 sec)
 {
 	u16 t;
 	u32 secCount = 0;
   
-	if(year < 1970 || year > 2099)    //Èç¹û´«ÈëµÄÄê·Ý³¬³öºÏ·¨Äê·ÝµÄ·¶Î§
+	if(year < 1970 || year > 2099)    //å¦‚æžœä¼ å…¥çš„å¹´ä»½è¶…å‡ºåˆæ³•å¹´ä»½çš„èŒƒå›´
   {
-    return 1;                       //´íÎó´úÂë
+    return 1;                       //é”™è¯¯ä»£ç 
   }
   
-	for(t = 1970; t < year; t++)	    //°ÑËùÓÐÄê·ÝµÄÃëÖÓÏà¼Ó
+	for(t = 1970; t < year; t++)	    //æŠŠæ‰€æœ‰å¹´ä»½çš„ç§’é’Ÿç›¸åŠ 
 	{
 		if(JudgeLeapYear(t))
     {
-      secCount += 31622400;         //¼ÓÉÏÈòÄêµÄÃëÖÓÊý
+      secCount += 31622400;         //åŠ ä¸Šé—°å¹´çš„ç§’é’Ÿæ•°
     }
 		else 
     {
-      secCount += 31536000;			    //¼ÓÉÏÆ½ÄêµÄÃëÖÓÊý
+      secCount += 31536000;			    //åŠ ä¸Šå¹³å¹´çš„ç§’é’Ÿæ•°
     }
 	}
 	mon -= 1;
-	for(t = 0; t < mon; t++)	        //°ÑÇ°ÃæÔÂ·ÝµÄÃëÖÓÊýÏà¼Ó
+	for(t = 0; t < mon; t++)	        //æŠŠå‰é¢æœˆä»½çš„ç§’é’Ÿæ•°ç›¸åŠ 
 	{
-    //ÔÂ·ÝÃëÖÓÊýÏà¼Ó
+    //æœˆä»½ç§’é’Ÿæ•°ç›¸åŠ 
 		secCount += (u32)monthTable[t] * 86400;
-    //ÅÐ¶ÏÊÇ·ñÎªÈòÄêÇÒÔÂ·ÝÎª2ÔÂ
+    //åˆ¤æ–­æ˜¯å¦ä¸ºé—°å¹´ä¸”æœˆä»½ä¸º2æœˆ
 		if(JudgeLeapYear(year) && t == 1)
     {
-      secCount += 86400;            //ÈòÄê2ÔÂ·ÝÔö¼ÓÒ»ÌìµÄÃëÖÓÊý	   
+      secCount += 86400;            //é—°å¹´2æœˆä»½å¢žåŠ ä¸€å¤©çš„ç§’é’Ÿæ•°	   
     }
 	}
-	secCount += (u32)(day-1) * 86400; //°ÑÇ°ÃæÈÕÆÚµÄÃëÖÓÊýÏà¼Ó 
-	secCount += (u32)hour * 3600;     //Ð¡Ê±ÃëÖÓÊý
-  secCount += (u32)min * 60;	      //·ÖÖÓÃëÖÓÊý
-	secCount +=  sec;                 //×îºóµÄÃëÖÓ¼ÓÉÏÈ¥
+	secCount += (u32)(day-1) * 86400; //æŠŠå‰é¢æ—¥æœŸçš„ç§’é’Ÿæ•°ç›¸åŠ  
+	secCount += (u32)hour * 3600;     //å°æ—¶ç§’é’Ÿæ•°
+  secCount += (u32)min * 60;	      //åˆ†é’Ÿç§’é’Ÿæ•°
+	secCount +=  sec;                 //æœ€åŽçš„ç§’é’ŸåŠ ä¸ŠåŽ»
 
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);	//Ê¹ÄÜPWRºÍBKPÍâÉèÊ±ÖÓ  
-	PWR_BackupAccessCmd(ENABLE);	    //Ê¹ÄÜRTCºÍºó±¸¼Ä´æÆ÷·ÃÎÊ 
-	RTC_SetCounter(secCount);	        //ÉèÖÃRTC¼ÆÊýÆ÷µÄÖµ
-	RTC_WaitForLastTask();	          //µÈ´ý×î½üÒ»´Î¶ÔRTC¼Ä´æÆ÷µÄÐ´²Ù×÷Íê³É 
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);	//ä½¿èƒ½PWRå’ŒBKPå¤–è®¾æ—¶é’Ÿ  
+	PWR_BackupAccessCmd(ENABLE);	    //ä½¿èƒ½RTCå’ŒåŽå¤‡å¯„å­˜å™¨è®¿é—® 
+	RTC_SetCounter(secCount);	        //è®¾ç½®RTCè®¡æ•°å™¨çš„å€¼
+	RTC_WaitForLastTask();	          //ç­‰å¾…æœ€è¿‘ä¸€æ¬¡å¯¹RTCå¯„å­˜å™¨çš„å†™æ“ä½œå®Œæˆ 
  	
-	return 0;	                        //³É¹¦  
+	return 0;	                        //æˆåŠŸ  
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: GetRTC
-* º¯Êý¹¦ÄÜ: µÃµ½µ±Ç°µÄÊ±¼ä
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: 0,³É¹¦;ÆäËû:´íÎó´úÂë.
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: GetRTC
+* å‡½æ•°åŠŸèƒ½: å¾—åˆ°å½“å‰çš„æ—¶é—´
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: 0,æˆåŠŸ;å…¶ä»–:é”™è¯¯ä»£ç .
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 u8 GetRTC(void)
 {
-  static u16  dayCnt    = 0;  //ÌìÊý±ê¼ÇÎ»
-	u32         timeCount = 0;  //ÓÃÀ´´æ·Å×ÜµÄÃëÊý
-	u32         temp      = 0;  //ÓÃÀ´´æ·ÅÌìÊý
-	u16         temp1     = 0;	//ÓÃÀ´´æ·ÅÄê·Ý£¬ÔÂ·Ý
+  static u16  dayCnt    = 0;  //å¤©æ•°æ ‡è®°ä½
+	u32         timeCount = 0;  //ç”¨æ¥å­˜æ”¾æ€»çš„ç§’æ•°
+	u32         temp      = 0;  //ç”¨æ¥å­˜æ”¾å¤©æ•°
+	u16         temp1     = 0;	//ç”¨æ¥å­˜æ”¾å¹´ä»½ï¼Œæœˆä»½
   
-  timeCount  =   RTC->CNTH;   //µÃµ½¼ÆÊýÆ÷¼Ä´æÆ÷¸ßÎ»
-  timeCount <<= 16;           //×óÒÆ16Î»£¬¿Õ³öµÍ16Î»
-  timeCount +=  RTC->CNTL;	  //µÃµ½¼ÆÊýÆ÷¼Ä´æÆ÷µÍÎ»²¢Óë¸ßÎ»Ïà¼Ó
+  timeCount  =   RTC->CNTH;   //å¾—åˆ°è®¡æ•°å™¨å¯„å­˜å™¨é«˜ä½
+  timeCount <<= 16;           //å·¦ç§»16ä½ï¼Œç©ºå‡ºä½Ž16ä½
+  timeCount +=  RTC->CNTL;	  //å¾—åˆ°è®¡æ•°å™¨å¯„å­˜å™¨ä½Žä½å¹¶ä¸Žé«˜ä½ç›¸åŠ 
 
- 	temp = timeCount / 86400;   //µÃµ½ÌìÊý(ÃëÊý¶ÔÓ¦µÄ)
+ 	temp = timeCount / 86400;   //å¾—åˆ°å¤©æ•°(ç§’æ•°å¯¹åº”çš„)
   
-	if(dayCnt != temp)          //Èç¹ûÊ±¼äÒÑ¾­¹ýÁËÒ»Ìì
+	if(dayCnt != temp)          //å¦‚æžœæ—¶é—´å·²ç»è¿‡äº†ä¸€å¤©
 	{	  
-		dayCnt = temp;            //½«ÌìÊý¸³¸ødaycnt
-		temp1  = 1970;	          //´Ó1970Äê¿ªÊ¼
-		while(temp >= 365)        //Èç¹ûÌìÊý´óÓÚ365
+		dayCnt = temp;            //å°†å¤©æ•°èµ‹ç»™daycnt
+		temp1  = 1970;	          //ä»Ž1970å¹´å¼€å§‹
+		while(temp >= 365)        //å¦‚æžœå¤©æ•°å¤§äºŽ365
 		{				 
-			if(JudgeLeapYear(temp1)) //Èç¹ûÅÐ¶ÏÄê·ÝÊÇÈòÄê
+			if(JudgeLeapYear(temp1)) //å¦‚æžœåˆ¤æ–­å¹´ä»½æ˜¯é—°å¹´
 			{
-				if(temp >= 366)       //Èç¹ûÌìÊý´óÓÚ366Ìì
+				if(temp >= 366)       //å¦‚æžœå¤©æ•°å¤§äºŽ366å¤©
         {
-          temp -= 366;        //ÌìÊý¼õÈ¥366Ìì
+          temp -= 366;        //å¤©æ•°å‡åŽ»366å¤©
         }
-				else                  //Èç¹ûÌìÊý²»´óÓÚ366Ìì
+				else                  //å¦‚æžœå¤©æ•°ä¸å¤§äºŽ366å¤©
         {
-          temp1++;            //Äê·Ý¼Ó1             
-          break;              //Ìø³öÑ­»·
+          temp1++;            //å¹´ä»½åŠ 1             
+          break;              //è·³å‡ºå¾ªçŽ¯
         }
 			}
-			else                    //Èç¹û²»ÊÇÈòÄê
+			else                    //å¦‚æžœä¸æ˜¯é—°å¹´
       {
-        temp -= 365;	        //ÌìÊý¼õÈ¥365Ìì
+        temp -= 365;	        //å¤©æ•°å‡åŽ»365å¤©
       }
-			temp1++;                //ÌìÊý´óÓÚ365Ìì£¬Äê·Ý¼Ó1£¬½øÈëÏÂÒ»Äê
+			temp1++;                //å¤©æ•°å¤§äºŽ365å¤©ï¼Œå¹´ä»½åŠ 1ï¼Œè¿›å…¥ä¸‹ä¸€å¹´
 		}   
-		calendar.year = temp1;    //µÃµ½Äê·Ý
-		temp1 = 0;                //¼ÆËãÍêÄê·ÝºóÇåÁã£¬ÓÃÓÚ¼ÆËãÔÂ·Ý     
-		while(temp >= 28)         //ÌìÊý³¬¹ýÁËÒ»¸öÔÂ
+		calendar.year = temp1;    //å¾—åˆ°å¹´ä»½
+		temp1 = 0;                //è®¡ç®—å®Œå¹´ä»½åŽæ¸…é›¶ï¼Œç”¨äºŽè®¡ç®—æœˆä»½     
+		while(temp >= 28)         //å¤©æ•°è¶…è¿‡äº†ä¸€ä¸ªæœˆ
 		{
-      //ÅÐ¶Ïµ±ÄêÊÇ²»ÊÇÈòÄêÇÒÔÂ·ÝÎª2ÔÂ
+      //åˆ¤æ–­å½“å¹´æ˜¯ä¸æ˜¯é—°å¹´ä¸”æœˆä»½ä¸º2æœˆ
 			if(JudgeLeapYear(calendar.year) && temp1 == 1)
 			{
-				if(temp >= 29)        //Èç¹ûÊÇÈòÄêÇÒÔÂ·ÝÎª2ÔÂ£¬ÌìÊý´óÓÚ29
+				if(temp >= 29)        //å¦‚æžœæ˜¯é—°å¹´ä¸”æœˆä»½ä¸º2æœˆï¼Œå¤©æ•°å¤§äºŽ29
         {
-          temp -= 29;         //ÌìÊý¼õÈ¥29
+          temp -= 29;         //å¤©æ•°å‡åŽ»29
         }
-				else                  //Èç¹ûÌìÊý²»´óÓÚ29
+				else                  //å¦‚æžœå¤©æ•°ä¸å¤§äºŽ29
         {
-          break;              //Ìø³öÑ­»·
+          break;              //è·³å‡ºå¾ªçŽ¯
         }
 			}
-			else                    //²»ÊÇÈòÄê»òÕß²»Îª2ÔÂ
+			else                    //ä¸æ˜¯é—°å¹´æˆ–è€…ä¸ä¸º2æœˆ
 			{
-        //Èç¹û×ÜÌìÊý´óÓÚµ±ÔÂµÄÌìÊý
+        //å¦‚æžœæ€»å¤©æ•°å¤§äºŽå½“æœˆçš„å¤©æ•°
 				if(temp >= monthTable[temp1])  
         {
-          //×ÜÌìÊý¼õÈ¥µ±ÔÂµÄÌìÊý
+          //æ€»å¤©æ•°å‡åŽ»å½“æœˆçš„å¤©æ•°
           temp -= monthTable[temp1];
         }
-				else                  //Èç¹ûÌìÊý²»´óÓÚµ±ÔÂµÄÌìÊý
+				else                  //å¦‚æžœå¤©æ•°ä¸å¤§äºŽå½“æœˆçš„å¤©æ•°
         {
-          break;              //Ìø³öÑ­»·
+          break;              //è·³å‡ºå¾ªçŽ¯
         }
 			}
-			temp1++;                //ÌìÊý´óÓÚµ±ÔÂÌìÊý£¬ÔÂ·ÝÊý¼Ó1£¬½øÈëÏÂ¸öÔÂ
+			temp1++;                //å¤©æ•°å¤§äºŽå½“æœˆå¤©æ•°ï¼Œæœˆä»½æ•°åŠ 1ï¼Œè¿›å…¥ä¸‹ä¸ªæœˆ
 		}
-		calendar.month = temp1 + 1;	  //µÃµ½ÔÂ·Ý
-		calendar.date  = temp  + 1;  	//µÃµ½ÈÕÆÚ 
+		calendar.month = temp1 + 1;	  //å¾—åˆ°æœˆä»½
+		calendar.date  = temp  + 1;  	//å¾—åˆ°æ—¥æœŸ 
 	}
   
-	temp = timeCount % 86400;     		    //µÃµ½Ê£ÓàµÄÃëÊý   	   
-	calendar.hour = temp / 3600;     	    //µÃµ½µ±Ç°Ð¡Ê±
-	calendar.min  = (temp % 3600) / 60; 	//µÃµ½µ±Ç°·ÖÖÓ	
-	calendar.sec  = (temp % 3600) % 60; 	//µÃµ½µ±Ç°ÃëÖÓ
-  //»ñÈ¡ÐÇÆÚ
+	temp = timeCount % 86400;     		    //å¾—åˆ°å‰©ä½™çš„ç§’æ•°   	   
+	calendar.hour = temp / 3600;     	    //å¾—åˆ°å½“å‰å°æ—¶
+	calendar.min  = (temp % 3600) / 60; 	//å¾—åˆ°å½“å‰åˆ†é’Ÿ	
+	calendar.sec  = (temp % 3600) % 60; 	//å¾—åˆ°å½“å‰ç§’é’Ÿ
+  //èŽ·å–æ˜ŸæœŸ
 	calendar.week = GetRTCWeek(calendar.year, calendar.month, calendar.date);
   
-	return 0;                             //³É¹¦
+	return 0;                             //æˆåŠŸ
 }	 
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: GetRTCWeek
-* º¯Êý¹¦ÄÜ: »ñµÃÏÖÔÚÊÇÐÇÆÚ¼¸£¬¹¦ÄÜÃèÊö:ÊäÈë¹«ÀúÈÕÆÚµÃµ½ÐÇÆÚ(Ö»ÔÊÐí1901-2099Äê)
-* ÊäÈë²ÎÊý: ¹«ÀúÄêÔÂÈÕ 
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: ÐÇÆÚºÅ	
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: ´Ë´¦ÓÃ²ÌÀÕ¹«Ê½À´¼ÆËãÐÇÆÚ£¬·µ»Ø0ÎªSunday
+* å‡½æ•°åç§°: GetRTCWeek
+* å‡½æ•°åŠŸèƒ½: èŽ·å¾—çŽ°åœ¨æ˜¯æ˜ŸæœŸå‡ ï¼ŒåŠŸèƒ½æè¿°:è¾“å…¥å…¬åŽ†æ—¥æœŸå¾—åˆ°æ˜ŸæœŸ(åªå…è®¸1901-2099å¹´)
+* è¾“å…¥å‚æ•°: å…¬åŽ†å¹´æœˆæ—¥ 
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: æ˜ŸæœŸå·	
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: æ­¤å¤„ç”¨è”¡å‹’å…¬å¼æ¥è®¡ç®—æ˜ŸæœŸï¼Œè¿”å›ž0ä¸ºSunday
 *********************************************************************************************************/																			 
 u8 GetRTCWeek(u16 year, u8 month, u8 day)
 {	
 	u16 temp2;
-	u8  yearH;          //ÓÃÓÚ´æ·ÅÄê·ÝµÄÇ°Á½Î»
-  u8  yearL;          //ÓÃÓÚ´æ·ÅÄê·ÝµÄºóÁ½Î»
+	u8  yearH;          //ç”¨äºŽå­˜æ”¾å¹´ä»½çš„å‰ä¸¤ä½
+  u8  yearL;          //ç”¨äºŽå­˜æ”¾å¹´ä»½çš„åŽä¸¤ä½
 	
-	yearH = year / 100;	//È¡³öÄê·ÝµÄÇ°Á½Î»
-  yearL = year % 100; //È¡³öÄê·ÝµÄºóÁ½Î»
+	yearH = year / 100;	//å–å‡ºå¹´ä»½çš„å‰ä¸¤ä½
+  yearL = year % 100; //å–å‡ºå¹´ä»½çš„åŽä¸¤ä½
 	
-	if (yearH > 19)     //Èç¹ûÎª21ÊÀ¼Í 
+	if (yearH > 19)     //å¦‚æžœä¸º21ä¸–çºª 
   {
-    yearL += 100;     //Äê·ÝµÄºóÁ½Î»Êý¼Ó100
+    yearL += 100;     //å¹´ä»½çš„åŽä¸¤ä½æ•°åŠ 100
   }
-	//Ëù¹ýÈòÄêÊýÖ»Ëã1900ÄêÖ®ºóµÄ£¬¸ù¾Ý²ÌÀÕËã·¨À´¼ÆËãÐÇÆÚ
+	//æ‰€è¿‡é—°å¹´æ•°åªç®—1900å¹´ä¹‹åŽçš„ï¼Œæ ¹æ®è”¡å‹’ç®—æ³•æ¥è®¡ç®—æ˜ŸæœŸ
 	temp2 = yearL + yearL / 4;  
 	temp2 = temp2 % 7;  
 	temp2 = temp2 + day + weekTable[month - 1];
   
 	if (yearL % 4 == 0 && month < 3) 
   {
-    temp2--;          //Èç¹ûÊÇ1ÔÂ»òÕß2ÔÂ£¬temp2Òª¼õ1
+    temp2--;          //å¦‚æžœæ˜¯1æœˆæˆ–è€…2æœˆï¼Œtemp2è¦å‡1
   }
   
-	return(temp2 % 7);  //·µ»ØÐÇÆÚºÅ
+	return(temp2 % 7);  //è¿”å›žæ˜ŸæœŸå·
 }			  
