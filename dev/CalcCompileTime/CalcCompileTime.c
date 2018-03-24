@@ -1,199 +1,199 @@
 /*********************************************************************************************************
-* Ä£¿éÃû³Æ: CalcCompileTime.c
-* Õª    Òª: 
-* µ±Ç°°æ±¾: 1.0.0
-* ×÷    Õß: 
-* Íê³ÉÈÕÆÚ: 
-* ÄÚ    ÈÝ:
-* ×¢    Òâ: none                                                                 
+* æ¨¡å—åç§°: CalcCompileTime.c
+* æ‘˜    è¦: 
+* å½“å‰ç‰ˆæœ¬: 1.0.0
+* ä½œ    è€…: 666immortal
+* å®Œæˆæ—¥æœŸ: 
+* å†…    å®¹:
+* æ³¨    æ„: none                                                                 
 **********************************************************************************************************
-* È¡´ú°æ±¾: 
-* ×÷    Õß:
-* Íê³ÉÈÕÆÚ: 
-* ÐÞ¸ÄÄÚÈÝ:
-* ÐÞ¸ÄÎÄ¼þ: 
+* å–ä»£ç‰ˆæœ¬: 
+* ä½œ    è€…:
+* å®Œæˆæ—¥æœŸ: 
+* ä¿®æ”¹å†…å®¹:
+* ä¿®æ”¹æ–‡ä»¶: 
 *********************************************************************************************************/
 
 
 /*********************************************************************************************************
-*                                              °üº¬Í·ÎÄ¼þ
+*                                              åŒ…å«å¤´æ–‡ä»¶
 *********************************************************************************************************/
 #include "CalcCompileTime.h"
 #include "UART.h"
 
 /*********************************************************************************************************
-*                                              ºê¶¨Òå
+*                                              å®å®šä¹‰
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              Ã¶¾Ù½á¹¹Ìå¶¨Òå
+*                                              æžšä¸¾ç»“æž„ä½“å®šä¹‰
 *********************************************************************************************************/
-//ÉùÃ÷Ã¶¾Ù½á¹¹Ìå£¬±ãÓÚ·Ö±æÊý×éÔªËØµÄº¬Òå£¬ÀýÈçs_arrCompileTime[COMPILE_TIME_MAX]£¬Êµ¼Ê±íÊ¾s_arrCompileTime[6]
+//å£°æ˜Žæžšä¸¾ç»“æž„ä½“ï¼Œä¾¿äºŽåˆ†è¾¨æ•°ç»„å…ƒç´ çš„å«ä¹‰ï¼Œä¾‹å¦‚s_arrCompileTime[COMPILE_TIME_MAX]ï¼Œå®žé™…è¡¨ç¤ºs_arrCompileTime[6]
 typedef enum
 {
-  COMPILE_TIME_SEC,        //COMPILE_TIME_SECÎªÕûÐÍ0
-  COMPILE_TIME_MIN,        //COMPILE_TIME_MINÎªÕûÐÍ1
-  COMPILE_TIME_HOUR,       //COMPILE_TIME_HOURÎªÕûÐÍ2
-  COMPILE_TIME_DAY,        //COMPILE_TIME_DAYÎªÕûÐÍ3
-  COMPILE_TIME_MONTH,      //COMPILE_TIME_MONTHÎªÕûÐÍ4
-  COMPILE_TIME_YEAR,       //COMPILE_TIME_YEARÎªÕûÐÍ5
-  COMPILE_TIME_MAX         //COMPILE_TIME_MAXÎªÕûÐÍ6
+  COMPILE_TIME_SEC,        //COMPILE_TIME_SECä¸ºæ•´åž‹0
+  COMPILE_TIME_MIN,        //COMPILE_TIME_MINä¸ºæ•´åž‹1
+  COMPILE_TIME_HOUR,       //COMPILE_TIME_HOURä¸ºæ•´åž‹2
+  COMPILE_TIME_DAY,        //COMPILE_TIME_DAYä¸ºæ•´åž‹3
+  COMPILE_TIME_MONTH,      //COMPILE_TIME_MONTHä¸ºæ•´åž‹4
+  COMPILE_TIME_YEAR,       //COMPILE_TIME_YEARä¸ºæ•´åž‹5
+  COMPILE_TIME_MAX         //COMPILE_TIME_MAXä¸ºæ•´åž‹6
 }EnumCompileTime;
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿±äÁ¿
+*                                              å†…éƒ¨å˜é‡
 *********************************************************************************************************/
-//__DATE__ºÍ__TIME__²»ÊÇ¹Ø¼ü×Ö£¬¶øÊÇÁ½¸ö±àÒëÆ÷ºê¶¨Òå£¬µ±±àÒëµ½µÄÊ±ºò£¬×Ô¶¯½«ÏµÍ³Ê±¼ä²åÈë³ÌÐòÖÐ
-static  char* s_pCompiledDate = __DATE__;     //__DATE__Êµ¼ÊÉÏÊÇÖ¸ÏòÏµÍ³µ±Ç°ÈÕÆÚµÄÖ¸Õë£¬ÀýÈç£ºMar 01 2018
-static  char* s_pCompiledTime = __TIME__;     //__TIME__Êµ¼ÊÉÏÊÇÖ¸ÏòÏµÍ³µ±Ç°Ê±¼äµÄÖ¸Õë£¬ÀýÈç£º20:11:19
+//__DATE__å’Œ__TIME__ä¸æ˜¯å…³é”®å­—ï¼Œè€Œæ˜¯ä¸¤ä¸ªç¼–è¯‘å™¨å®å®šä¹‰ï¼Œå½“ç¼–è¯‘åˆ°çš„æ—¶å€™ï¼Œè‡ªåŠ¨å°†ç³»ç»Ÿæ—¶é—´æ’å…¥ç¨‹åºä¸­
+static  char* s_pCompiledDate = __DATE__;     //__DATE__å®žé™…ä¸Šæ˜¯æŒ‡å‘ç³»ç»Ÿå½“å‰æ—¥æœŸçš„æŒ‡é’ˆï¼Œä¾‹å¦‚ï¼šMar 01 2018
+static  char* s_pCompiledTime = __TIME__;     //__TIME__å®žé™…ä¸Šæ˜¯æŒ‡å‘ç³»ç»Ÿå½“å‰æ—¶é—´çš„æŒ‡é’ˆï¼Œä¾‹å¦‚ï¼š20:11:19
 
-//¶¨ÒåÒ»¸ö×Ö·û¶þÎ¬Êý×éÓÃÀ´´æ·ÅÊ®¶þ¸öÔÂ·ÝµÄËõÐ´
+//å®šä¹‰ä¸€ä¸ªå­—ç¬¦äºŒç»´æ•°ç»„ç”¨æ¥å­˜æ”¾åäºŒä¸ªæœˆä»½çš„ç¼©å†™
 static  char  s_arrMonthTab[12][3]={ "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
-//¶¨ÒåÒ»¸öu16ÀàÐÍÒ»Î¬Êý×éÓÃÀ´´æ´¢±àÒëµÄÈÕÆÚºÍÊ±¼ä
+//å®šä¹‰ä¸€ä¸ªu16ç±»åž‹ä¸€ç»´æ•°ç»„ç”¨æ¥å­˜å‚¨ç¼–è¯‘çš„æ—¥æœŸå’Œæ—¶é—´
 static  u16   s_arrCompileTime[COMPILE_TIME_MAX];   
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊýÉùÃ÷
+*                                              å†…éƒ¨å‡½æ•°å£°æ˜Ž
 *********************************************************************************************************/
-static  u8    CmpStr(u8* s1, u8* s2, u8 len);      //±È½Ï×Ö·û´®£¬ÓÉCalcCompiledTime()º¯Êýµ÷ÓÃ  
-static  void  CalcCompiledTime(void);              //¼ÆËã±àÒëÊ±¼ä
+static  u8    CmpStr(u8* s1, u8* s2, u8 len);      //æ¯”è¾ƒå­—ç¬¦ä¸²ï¼Œç”±CalcCompiledTime()å‡½æ•°è°ƒç”¨  
+static  void  CalcCompiledTime(void);              //è®¡ç®—ç¼–è¯‘æ—¶é—´
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊýÊµÏÖ
+*                                              å†…éƒ¨å‡½æ•°å®žçŽ°
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: CmpStr
-* º¯Êý¹¦ÄÜ: ±È½Ï×Ö·û´®£¬ÓÉCalcCompiledTime()º¯Êýµ÷ÓÃ  
-* ÊäÈë²ÎÊý: ×Ö·û´®s1ºÍ×Ö·û´®s2£¬×Ö·û´®³¤¶È
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: Èç¹û×Ö·û´®ÏàÍ¬£¬·µ»ØÖµÎª1£¬Èç¹û×Ö·û´®²»Í¬£¬·µ»ØÖµÔòÎª0
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: CmpStr
+* å‡½æ•°åŠŸèƒ½: æ¯”è¾ƒå­—ç¬¦ä¸²ï¼Œç”±CalcCompiledTime()å‡½æ•°è°ƒç”¨  
+* è¾“å…¥å‚æ•°: å­—ç¬¦ä¸²s1å’Œå­—ç¬¦ä¸²s2ï¼Œå­—ç¬¦ä¸²é•¿åº¦
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: å¦‚æžœå­—ç¬¦ä¸²ç›¸åŒï¼Œè¿”å›žå€¼ä¸º1ï¼Œå¦‚æžœå­—ç¬¦ä¸²ä¸åŒï¼Œè¿”å›žå€¼åˆ™ä¸º0
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 static  u8  CmpStr(u8* s1, u8* s2, u8 len)
 {
   u8 i;
   
-  for(i = 0; i < len; i++)        //Ñ­»·½øÐÐlen´Î
+  for(i = 0; i < len; i++)        //å¾ªçŽ¯è¿›è¡Œlenæ¬¡
   {
-    if(*s1++ != *s2++)            //Öð¸ö±È½Ï×Ö·û´®µÄ×Ö·û  
+    if(*s1++ != *s2++)            //é€ä¸ªæ¯”è¾ƒå­—ç¬¦ä¸²çš„å­—ç¬¦  
     {
-      return 0;                   //Èç¹ûÁ½¸ö×Ö·û´®²»ÏàÍ¬£¬·µ»Ø0
+      return 0;                   //å¦‚æžœä¸¤ä¸ªå­—ç¬¦ä¸²ä¸ç›¸åŒï¼Œè¿”å›ž0
     } 
   }
   
-  return 1;                       //Èç¹ûÁ½¸ö×Ö·û´®ÍêÈ«ÏàÍ¬£¬·µ»Ø1
+  return 1;                       //å¦‚æžœä¸¤ä¸ªå­—ç¬¦ä¸²å®Œå…¨ç›¸åŒï¼Œè¿”å›ž1
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: CalcCompiledTime
-* º¯Êý¹¦ÄÜ: ¼ÆËã±àÒëÊ±¼ä  
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: //__DATE__Êµ¼ÊÉÏÊÇÖ¸ÏòÏµÍ³µ±Ç°ÈÕÆÚµÄÖ¸Õë£¬ÀýÈç£ºMar 01 2018
-            //__TIME__Êµ¼ÊÉÏÊÇÖ¸ÏòÏµÍ³µ±Ç°Ê±¼äµÄÖ¸Õë£¬ÀýÈç£º20:11:19
+* å‡½æ•°åç§°: CalcCompiledTime
+* å‡½æ•°åŠŸèƒ½: è®¡ç®—ç¼–è¯‘æ—¶é—´  
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: //__DATE__å®žé™…ä¸Šæ˜¯æŒ‡å‘ç³»ç»Ÿå½“å‰æ—¥æœŸçš„æŒ‡é’ˆï¼Œä¾‹å¦‚ï¼šMar 01 2018
+            //__TIME__å®žé™…ä¸Šæ˜¯æŒ‡å‘ç³»ç»Ÿå½“å‰æ—¶é—´çš„æŒ‡é’ˆï¼Œä¾‹å¦‚ï¼š20:11:19
             //                M a r  0 1  2 0 1 8
-            //s_pCompiledDate[0 1 2  3 4  5 6 7 8],Êý×éÓëÈÕÆÚµÄ¶ÔÓ¦¹ØÏµ
+            //s_pCompiledDate[0 1 2  3 4  5 6 7 8],æ•°ç»„ä¸Žæ—¥æœŸçš„å¯¹åº”å…³ç³»
             //                2 0 : 1 1 : 1 9
-            //s_pCompiledTime[0 1 2 3 4 5 6 7],Êý×éÓëÊ±¼äµÄ¶ÔÓ¦¹ØÏµ 
+            //s_pCompiledTime[0 1 2 3 4 5 6 7],æ•°ç»„ä¸Žæ—¶é—´çš„å¯¹åº”å…³ç³» 
 *********************************************************************************************************/
 static  void CalcCompiledTime(void)
 {
-  u8  arrMonChar[3];                                  //ÓÃÓÚ´æ·Åµ±Ç°ÔÂ·ÝµÄ3¸öËõÐ´×Ö·û
+  u8  arrMonChar[3];                                  //ç”¨äºŽå­˜æ”¾å½“å‰æœˆä»½çš„3ä¸ªç¼©å†™å­—ç¬¦
   u8  i;
   
-  for(i = 0; i < 3; i++)                              //È¡³öµ±Ç°ÔÂ·Ý3¸öËõÐ´×Ö·û
+  for(i = 0; i < 3; i++)                              //å–å‡ºå½“å‰æœˆä»½3ä¸ªç¼©å†™å­—ç¬¦
   {
-    arrMonChar[i] = s_pCompiledDate[i];               //½«__DATE__µÄÇ°3¸ö×Ö·û¸³¸øarrMonCharÊý×é
+    arrMonChar[i] = s_pCompiledDate[i];               //å°†__DATE__çš„å‰3ä¸ªå­—ç¬¦èµ‹ç»™arrMonCharæ•°ç»„
   }
     
-  for(i = 0; i < 12; i++)                             //12¸öÔÂ·Ý£¬Òò´Ë×î¶à±È½Ï12´Î
+  for(i = 0; i < 12; i++)                             //12ä¸ªæœˆä»½ï¼Œå› æ­¤æœ€å¤šæ¯”è¾ƒ12æ¬¡
   {
-    if(CmpStr((u8*)s_arrMonthTab[i], arrMonChar, 3))  //µ÷ÓÃCmpStr½øÐÐÔÂ·ÝËõÐ´±È½ÏÆ¥Åä
+    if(CmpStr((u8*)s_arrMonthTab[i], arrMonChar, 3))  //è°ƒç”¨CmpStrè¿›è¡Œæœˆä»½ç¼©å†™æ¯”è¾ƒåŒ¹é…
     {
-      break;                                          //ÈôÆ¥ÅäÔòÌø³öÑ­»·£¬´ËÊ±iÑ­»·µ½Êµ¼ÊÔÂ·Ý¼õ1
+      break;                                          //è‹¥åŒ¹é…åˆ™è·³å‡ºå¾ªçŽ¯ï¼Œæ­¤æ—¶iå¾ªçŽ¯åˆ°å®žé™…æœˆä»½å‡1
     }	     
   }
    
-  s_arrCompileTime[COMPILE_TIME_MONTH] = i + 1;       //i+1¼´ÎªÊµ¼ÊµÄÔÂ·Ý
+  s_arrCompileTime[COMPILE_TIME_MONTH] = i + 1;       //i+1å³ä¸ºå®žé™…çš„æœˆä»½
   
-  //[4]ÎªÈÕÆÚµÄ¸ßÎ»£¬¼´dayµÄÊ®Î»£¬Èç¹ûÈÕÆÚ¸ßÎ»Îª¿Õ×Ö·û£¬¼´dayÔÚ0-9Ö®¼ä
+  //[4]ä¸ºæ—¥æœŸçš„é«˜ä½ï¼Œå³dayçš„åä½ï¼Œå¦‚æžœæ—¥æœŸé«˜ä½ä¸ºç©ºå­—ç¬¦ï¼Œå³dayåœ¨0-9ä¹‹é—´
   if(s_pCompiledDate[4] == ' ')                       
   {
-    //ÈÕÆÚÖ±½Ó¼õÈ¥"0"µÄASCIIÂë£¬¼´ÎªdayµÄ¾ø¶ÔÖµ£¬0-9Ö®¼ä
+    //æ—¥æœŸç›´æŽ¥å‡åŽ»"0"çš„ASCIIç ï¼Œå³ä¸ºdayçš„ç»å¯¹å€¼ï¼Œ0-9ä¹‹é—´
     s_arrCompileTime[COMPILE_TIME_DAY] = s_pCompiledDate[5] - '0';     
   }
   else
   {
-    //·ñÔò£¬dayÎªÁ½Î»Êý£¬¼´ÔÚ10-31Ö®¼ä
+    //å¦åˆ™ï¼Œdayä¸ºä¸¤ä½æ•°ï¼Œå³åœ¨10-31ä¹‹é—´
     s_arrCompileTime[COMPILE_TIME_DAY] = 10 * (s_pCompiledDate[4] - '0') + s_pCompiledDate[5] - '0';
   }
-  //Ã¿¸öÎ»µÄÊý³ËÒÔÏàÓ¦µÄÎ»Ö®ºÍ¼´ÎªÄê·Ý
+  //æ¯ä¸ªä½çš„æ•°ä¹˜ä»¥ç›¸åº”çš„ä½ä¹‹å’Œå³ä¸ºå¹´ä»½
   s_arrCompileTime[COMPILE_TIME_YEAR]  = 1000 * (s_pCompiledDate[7]  - '0') + 
                                           100 * (s_pCompiledDate[8]  - '0') + 
                                            10 * (s_pCompiledDate[9]  - '0') +
                                                 (s_pCompiledDate[10] - '0');
    
-  //Ã¿¸öÎ»µÄÊý³ËÒÔÏàÓ¦µÄÎ»Ö®ºÍ¼´ÎªÊ±¼ä  
+  //æ¯ä¸ªä½çš„æ•°ä¹˜ä»¥ç›¸åº”çš„ä½ä¹‹å’Œå³ä¸ºæ—¶é—´  
   s_arrCompileTime[COMPILE_TIME_HOUR]  =  10 * (s_pCompiledTime[0]  - '0') + s_pCompiledTime[1] - '0';  
   s_arrCompileTime[COMPILE_TIME_MIN]   =  10 * (s_pCompiledTime[3]  - '0') + s_pCompiledTime[4] - '0';  
   s_arrCompileTime[COMPILE_TIME_SEC]   =  10 * (s_pCompiledTime[6]  - '0') + s_pCompiledTime[7] - '0'; 
 }
 
 /*********************************************************************************************************
-*                                              APIº¯ÊýÊµÏÖ
+*                                              APIå‡½æ•°å®žçŽ°
 *********************************************************************************************************/
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: InitCalcCompileTime
-* º¯Êý¹¦ÄÜ: ³õÊ¼»¯²¢¼ÆËã±àÒëÊ±¼ä
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: InitCalcCompileTime
+* å‡½æ•°åŠŸèƒ½: åˆå§‹åŒ–å¹¶è®¡ç®—ç¼–è¯‘æ—¶é—´
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 void InitCalcCompileTime(void)
 {
-  i16 i;                                   //ÓÃÓÚÑ­»·Óï¾ä
+  i16 i;                                   //ç”¨äºŽå¾ªçŽ¯è¯­å¥
 
-  for(i = 0; i < COMPILE_TIME_MAX; i++)    //¸ø´æ´¢±àÒëÊ±¼äµÄÊý×é¸³³õÖµ
+  for(i = 0; i < COMPILE_TIME_MAX; i++)    //ç»™å­˜å‚¨ç¼–è¯‘æ—¶é—´çš„æ•°ç»„èµ‹åˆå€¼
   {
-    s_arrCompileTime[i] = 0;               //Êý×éÔªËØ³õÊ¼Öµ¾ùÎª0
+    s_arrCompileTime[i] = 0;               //æ•°ç»„å…ƒç´ åˆå§‹å€¼å‡ä¸º0
   }
     
-  CalcCompiledTime();                      //¼ÆËã±àÒëÊ±¼ä
+  CalcCompiledTime();                      //è®¡ç®—ç¼–è¯‘æ—¶é—´
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: GetCompileTime
-* º¯Êý¹¦ÄÜ: »ñÈ¡±àÒëÊ±¼ä
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: s_arrCompileTime
-* ´´½¨ÈÕÆÚ: 2016Äê04ÔÂ10ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: GetCompileTime
+* å‡½æ•°åŠŸèƒ½: èŽ·å–ç¼–è¯‘æ—¶é—´
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: s_arrCompileTime
+* åˆ›å»ºæ—¥æœŸ: 2016å¹´04æœˆ10æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 u16* GetCompileTime(void)
 {
-  return(s_arrCompileTime);                //·µ»Ø¼ÆËã³öµÄ±àÒëÊ±¼ä
+  return(s_arrCompileTime);                //è¿”å›žè®¡ç®—å‡ºçš„ç¼–è¯‘æ—¶é—´
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: PrintCompileTime
-* º¯Êý¹¦ÄÜ: ´òÓ¡±àÒëÊ±¼ä
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: PrintCompileTime
+* å‡½æ•°åŠŸèƒ½: æ‰“å°ç¼–è¯‘æ—¶é—´
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 void  PrintCompileTime(void)
 { 
-  //´òÓ¡±àÒëÊ±¼ä£¬¸ñÊ½Îª£ºÄê-ÔÂ-ÈÕ Ð¡Ê±£º·ÖÖÓ£ºÃë
+  //æ‰“å°ç¼–è¯‘æ—¶é—´ï¼Œæ ¼å¼ä¸ºï¼šå¹´-æœˆ-æ—¥ å°æ—¶ï¼šåˆ†é’Ÿï¼šç§’
   printf("Compiled time: %04d-%02d-%02d %02d:%02d:%02d\r\n", 
         s_arrCompileTime[COMPILE_TIME_YEAR], 
         s_arrCompileTime[COMPILE_TIME_MONTH], 
