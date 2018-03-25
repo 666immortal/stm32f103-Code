@@ -1,172 +1,172 @@
 /*********************************************************************************************************
-* Ä£¿éÃû³Æ: SPI.c
-* Õª    Òª: 
-* µ±Ç°°æ±¾: 1.0.0
-* ×÷    Õß: 
-* Íê³ÉÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ 
-* ÄÚ    Èİ: ÒÔÏÂÊÇSPIÄ£¿éµÄ³õÊ¼»¯´úÂë£¬ÅäÖÃ³ÉÖ÷»úÄ£Ê½
-* ×¢    Òâ: none                                                                  
+* æ¨¡å—åç§°: SPI.c
+* æ‘˜    è¦: 
+* å½“å‰ç‰ˆæœ¬: 1.0.0
+* ä½œ    è€…: 666immortal
+* å®Œæˆæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥ 
+* å†…    å®¹: ä»¥ä¸‹æ˜¯SPIæ¨¡å—çš„åˆå§‹åŒ–ä»£ç ï¼Œé…ç½®æˆä¸»æœºæ¨¡å¼
+* æ³¨    æ„: none                                                                  
 **********************************************************************************************************
-* È¡´ú°æ±¾: 
-* ×÷    Õß:
-* Íê³ÉÈÕÆÚ: 
-* ĞŞ¸ÄÄÚÈİ:
-* ĞŞ¸ÄÎÄ¼ş: 
+* å–ä»£ç‰ˆæœ¬: 
+* ä½œ    è€…:
+* å®Œæˆæ—¥æœŸ: 
+* ä¿®æ”¹å†…å®¹:
+* ä¿®æ”¹æ–‡ä»¶: 
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              °üº¬Í·ÎÄ¼ş
+*                                              åŒ…å«å¤´æ–‡ä»¶
 *********************************************************************************************************/
 #include "SPI.h"
 #include "stm32f10x.h"
 
 /*********************************************************************************************************
-*                                              ºê¶¨Òå
+*                                              å®å®šä¹‰
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              Ã¶¾Ù½á¹¹Ìå¶¨Òå
+*                                              æšä¸¾ç»“æ„ä½“å®šä¹‰
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿±äÁ¿
+*                                              å†…éƒ¨å˜é‡
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊıÉùÃ÷
+*                                              å†…éƒ¨å‡½æ•°å£°æ˜
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊıÊµÏÖ
+*                                              å†…éƒ¨å‡½æ•°å®ç°
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              APIº¯ÊıÊµÏÖ
+*                                              APIå‡½æ•°å®ç°
 *********************************************************************************************************/
 /*********************************************************************************************************
-* º¯ÊıÃû³Æ: InitSPI
-* º¯Êı¹¦ÄÜ: ³õÊ¼»¯SPI
-* ÊäÈë²ÎÊı: void
-* Êä³ö²ÎÊı: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: InitSPI
+* å‡½æ•°åŠŸèƒ½: åˆå§‹åŒ–SPI
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å› å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 void InitSPI(void)
 {
-  GPIO_InitTypeDef GPIO_InitStructure;//¶¨Òå½á¹¹ÌåGPIO_InitStructure,ÓÃÀ´ÅäÖÃSPIµÄGPIO
-  SPI_InitTypeDef  SPI_InitStructure; //¶¨Òå½á¹¹SPI_InitStructure,ÓÃÀ´ÅäÖÃSPIµÄ²ÎÊı
+  GPIO_InitTypeDef GPIO_InitStructure;//å®šä¹‰ç»“æ„ä½“GPIO_InitStructure,ç”¨æ¥é…ç½®SPIçš„GPIO
+  SPI_InitTypeDef  SPI_InitStructure; //å®šä¹‰ç»“æ„SPI_InitStructure,ç”¨æ¥é…ç½®SPIçš„å‚æ•°
 
-  if(USER_DEFINE_SPI_PORT == SPI1)    //Èç¹ûÓÃ»§Ñ¡ÔñµÄSPI¶Ë¿ÚÎªSPI1
+  if(USER_DEFINE_SPI_PORT == SPI1)    //å¦‚æœç”¨æˆ·é€‰æ‹©çš„SPIç«¯å£ä¸ºSPI1
   {
-    RCC_APB2PeriphClockCmd(USER_DEFINE_SPI_CLK,  ENABLE); //SPI1Ê±ÖÓÊ¹ÄÜ
+    RCC_APB2PeriphClockCmd(USER_DEFINE_SPI_CLK,  ENABLE); //SPI1æ—¶é’Ÿä½¿èƒ½
   }
   else
   {
-    RCC_APB1PeriphClockCmd(USER_DEFINE_SPI_CLK,  ENABLE); //SPI2/SPI3Ê±ÖÓÊ¹ÄÜ
+    RCC_APB1PeriphClockCmd(USER_DEFINE_SPI_CLK,  ENABLE); //SPI2/SPI3æ—¶é’Ÿä½¿èƒ½
   }
  
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;                 //¸´ÓÃÍÆÍìÊä³öÄ£Ê½
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;               //ÉèÖÃI/O¿ÚËÙÂÊÎª50MHz
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;                 //å¤ç”¨æ¨æŒ½è¾“å‡ºæ¨¡å¼
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;               //è®¾ç½®I/Oå£é€Ÿç‡ä¸º50MHz
   
-  RCC_APB2PeriphClockCmd(USER_DEFINE_SPI_SCK_GPIO_CLK, ENABLE);   //Ê¹ÄÜSPI.SCKµÄÊ±ÖÓ  
-  GPIO_InitStructure.GPIO_Pin = USER_DEFINE_SPI_SCK_GPIO_PIN;     //ÉèÖÃSPI.SCKµÄÒı½Å
-  GPIO_Init(USER_DEFINE_SPI_SCK_GPIO_PORT, &GPIO_InitStructure);  //¸ù¾İ²ÎÊı³õÊ¼»¯SPI.SCKµÄGPIO¶Ë¿Ú
+  RCC_APB2PeriphClockCmd(USER_DEFINE_SPI_SCK_GPIO_CLK, ENABLE);   //ä½¿èƒ½SPI.SCKçš„æ—¶é’Ÿ  
+  GPIO_InitStructure.GPIO_Pin = USER_DEFINE_SPI_SCK_GPIO_PIN;     //è®¾ç½®SPI.SCKçš„å¼•è„š
+  GPIO_Init(USER_DEFINE_SPI_SCK_GPIO_PORT, &GPIO_InitStructure);  //æ ¹æ®å‚æ•°åˆå§‹åŒ–SPI.SCKçš„GPIOç«¯å£
 
-  RCC_APB2PeriphClockCmd(USER_DEFINE_SPI_MISO_GPIO_CLK, ENABLE);  //Ê¹ÄÜSPI.MISOµÄÊ±ÖÓ   
-  GPIO_InitStructure.GPIO_Pin = USER_DEFINE_SPI_MISO_GPIO_PIN;    //ÉèÖÃSPI.MISOµÄÒı½Å
-  GPIO_Init(USER_DEFINE_SPI_MISO_GPIO_PORT, &GPIO_InitStructure); //¸ù¾İ²ÎÊı³õÊ¼»¯SPI.MISOµÄGPIO¶Ë¿Ú
+  RCC_APB2PeriphClockCmd(USER_DEFINE_SPI_MISO_GPIO_CLK, ENABLE);  //ä½¿èƒ½SPI.MISOçš„æ—¶é’Ÿ   
+  GPIO_InitStructure.GPIO_Pin = USER_DEFINE_SPI_MISO_GPIO_PIN;    //è®¾ç½®SPI.MISOçš„å¼•è„š
+  GPIO_Init(USER_DEFINE_SPI_MISO_GPIO_PORT, &GPIO_InitStructure); //æ ¹æ®å‚æ•°åˆå§‹åŒ–SPI.MISOçš„GPIOç«¯å£
 
-  RCC_APB2PeriphClockCmd(USER_DEFINE_SPI_MOSI_GPIO_CLK, ENABLE);  //Ê¹ÄÜSPI.MOSIµÄÊ±ÖÓ 
-  GPIO_InitStructure.GPIO_Pin = USER_DEFINE_SPI_MOSI_GPIO_PIN;    //ÉèÖÃSPI.MOSIµÄÒı½Å
-  GPIO_Init(USER_DEFINE_SPI_MOSI_GPIO_PORT, &GPIO_InitStructure); //¸ù¾İ²ÎÊı³õÊ¼»¯SPI.MOSIµÄGPIO¶Ë¿Ú
+  RCC_APB2PeriphClockCmd(USER_DEFINE_SPI_MOSI_GPIO_CLK, ENABLE);  //ä½¿èƒ½SPI.MOSIçš„æ—¶é’Ÿ 
+  GPIO_InitStructure.GPIO_Pin = USER_DEFINE_SPI_MOSI_GPIO_PIN;    //è®¾ç½®SPI.MOSIçš„å¼•è„š
+  GPIO_Init(USER_DEFINE_SPI_MOSI_GPIO_PORT, &GPIO_InitStructure); //æ ¹æ®å‚æ•°åˆå§‹åŒ–SPI.MOSIçš„GPIOç«¯å£
 
-  GPIO_SetBits(USER_DEFINE_SPI_SCK_GPIO_PORT, USER_DEFINE_SPI_SCK_GPIO_PIN);  //³õÊ¼»¯SPI.SCKÊä³ö¸ßµçÆ½
-  GPIO_SetBits(USER_DEFINE_SPI_MISO_GPIO_PORT, USER_DEFINE_SPI_MISO_GPIO_PIN);//³õÊ¼»¯SPI.MISOÊä³ö¸ßµçÆ½
-  GPIO_SetBits(USER_DEFINE_SPI_MOSI_GPIO_PORT, USER_DEFINE_SPI_MOSI_GPIO_PIN);//³õÊ¼»¯SPI.MOSIÊä³ö¸ßµçÆ½
+  GPIO_SetBits(USER_DEFINE_SPI_SCK_GPIO_PORT, USER_DEFINE_SPI_SCK_GPIO_PIN);  //åˆå§‹åŒ–SPI.SCKè¾“å‡ºé«˜ç”µå¹³
+  GPIO_SetBits(USER_DEFINE_SPI_MISO_GPIO_PORT, USER_DEFINE_SPI_MISO_GPIO_PIN);//åˆå§‹åŒ–SPI.MISOè¾“å‡ºé«˜ç”µå¹³
+  GPIO_SetBits(USER_DEFINE_SPI_MOSI_GPIO_PORT, USER_DEFINE_SPI_MOSI_GPIO_PIN);//åˆå§‹åŒ–SPI.MOSIè¾“å‡ºé«˜ç”µå¹³
 
-  //ÉèÖÃSPIµ¥Ïò»òÕßË«ÏòµÄÊı¾İÄ£Ê½:SPIÉèÖÃÎªË«ÏßË«ÏòÈ«Ë«¹¤
+  //è®¾ç½®SPIå•å‘æˆ–è€…åŒå‘çš„æ•°æ®æ¨¡å¼:SPIè®¾ç½®ä¸ºåŒçº¿åŒå‘å…¨åŒå·¥
   SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
-  SPI_InitStructure.SPI_Mode = SPI_Mode_Master;       //ÉèÖÃSPI¹¤×÷Ä£Ê½:ÉèÖÃÎªÖ÷SPI
-  SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;   //ÉèÖÃSPIµÄÊı¾İ´óĞ¡:SPI·¢ËÍ½ÓÊÕ8Î»Ö¡½á¹¹
-  SPI_InitStructure.SPI_CPOL = USER_DEFINE_SPI_CPOL;  //´®ĞĞÍ¬²½Ê±ÖÓµÄ¿ÕÏĞ×´Ì¬Îª¸ßµçÆ½
-  SPI_InitStructure.SPI_CPHA = USER_DEFINE_SPI_CPHA;  //´®ĞĞÍ¬²½Ê±ÖÓµÄµÚ¶ş¸öÌø±äÑØ£¨ÉÏÉı»òÏÂ½µ£©Êı¾İ±»²ÉÑù
-  //NSSĞÅºÅÓÉÓ²¼ş£¨NSS¹Ü½Å£©»¹ÊÇÈí¼ş£¨Ê¹ÓÃSSIÎ»£©¹ÜÀí:ÄÚ²¿NSSĞÅºÅÓĞSSIÎ»¿ØÖÆ
+  SPI_InitStructure.SPI_Mode = SPI_Mode_Master;       //è®¾ç½®SPIå·¥ä½œæ¨¡å¼:è®¾ç½®ä¸ºä¸»SPI
+  SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;   //è®¾ç½®SPIçš„æ•°æ®å¤§å°:SPIå‘é€æ¥æ”¶8ä½å¸§ç»“æ„
+  SPI_InitStructure.SPI_CPOL = USER_DEFINE_SPI_CPOL;  //ä¸²è¡ŒåŒæ­¥æ—¶é’Ÿçš„ç©ºé—²çŠ¶æ€ä¸ºé«˜ç”µå¹³
+  SPI_InitStructure.SPI_CPHA = USER_DEFINE_SPI_CPHA;  //ä¸²è¡ŒåŒæ­¥æ—¶é’Ÿçš„ç¬¬äºŒä¸ªè·³å˜æ²¿ï¼ˆä¸Šå‡æˆ–ä¸‹é™ï¼‰æ•°æ®è¢«é‡‡æ ·
+  //NSSä¿¡å·ç”±ç¡¬ä»¶ï¼ˆNSSç®¡è„šï¼‰è¿˜æ˜¯è½¯ä»¶ï¼ˆä½¿ç”¨SSIä½ï¼‰ç®¡ç†:å†…éƒ¨NSSä¿¡å·æœ‰SSIä½æ§åˆ¶
   SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;   
-  //¶¨Òå²¨ÌØÂÊÔ¤·ÖÆµµÄÖµ:²¨ÌØÂÊÔ¤·ÖÆµÖµÎª256
+  //å®šä¹‰æ³¢ç‰¹ç‡é¢„åˆ†é¢‘çš„å€¼:æ³¢ç‰¹ç‡é¢„åˆ†é¢‘å€¼ä¸º256
   SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;  
-  //Ö¸¶¨Êı¾İ´«Êä´ÓMSBÎ»»¹ÊÇLSBÎ»¿ªÊ¼:Êı¾İ´«Êä´ÓMSBÎ»¿ªÊ¼
+  //æŒ‡å®šæ•°æ®ä¼ è¾“ä»MSBä½è¿˜æ˜¯LSBä½å¼€å§‹:æ•°æ®ä¼ è¾“ä»MSBä½å¼€å§‹
   SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;  
-  SPI_InitStructure.SPI_CRCPolynomial = 7;            //CRCÖµ¼ÆËãµÄ¶àÏîÊ½
-  SPI_Init(USER_DEFINE_SPI_PORT, &SPI_InitStructure); //¸ù¾İSPI_InitStructÖĞÖ¸¶¨µÄ²ÎÊı³õÊ¼»¯ÍâÉèSPIx¼Ä´æÆ÷
+  SPI_InitStructure.SPI_CRCPolynomial = 7;            //CRCå€¼è®¡ç®—çš„å¤šé¡¹å¼
+  SPI_Init(USER_DEFINE_SPI_PORT, &SPI_InitStructure); //æ ¹æ®SPI_InitStructä¸­æŒ‡å®šçš„å‚æ•°åˆå§‹åŒ–å¤–è®¾SPIxå¯„å­˜å™¨
  
-  SPI_Cmd(USER_DEFINE_SPI_PORT, ENABLE);              //Ê¹ÄÜSPIÍâÉè
+  SPI_Cmd(USER_DEFINE_SPI_PORT, ENABLE);              //ä½¿èƒ½SPIå¤–è®¾
   
-  SPIReadWriteByte(0xff);                             //Æô¶¯´«Êä
+  SPIReadWriteByte(0xff);                             //å¯åŠ¨ä¼ è¾“
 }   
   
 /*********************************************************************************************************
-* º¯ÊıÃû³Æ: SPISetSpeed
-* º¯Êı¹¦ÄÜ: ÉèÖÃSPIµÄËÙÂÊ
-* ÊäÈë²ÎÊı: SPI_BaudRatePrescaler£¬SPIµÄ²¨ÌØÂÊ·ÖÆµÖµ
-* Êä³ö²ÎÊı: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: SPI ËÙ¶ÈÉèÖÃº¯Êı
+* å‡½æ•°åç§°: SPISetSpeed
+* å‡½æ•°åŠŸèƒ½: è®¾ç½®SPIçš„é€Ÿç‡
+* è¾“å…¥å‚æ•°: SPI_BaudRatePrescalerï¼ŒSPIçš„æ³¢ç‰¹ç‡åˆ†é¢‘å€¼
+* è¾“å‡ºå‚æ•°: void
+* è¿” å› å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: SPI é€Ÿåº¦è®¾ç½®å‡½æ•°
 *           SpeedSet:
-*           SPI_BaudRatePrescaler_2   2·ÖÆµ   
-*           SPI_BaudRatePrescaler_8   8·ÖÆµ   
-*           SPI_BaudRatePrescaler_16  16·ÖÆµ  
-*           SPI_BaudRatePrescaler_256 256·ÖÆµ       
+*           SPI_BaudRatePrescaler_2   2åˆ†é¢‘   
+*           SPI_BaudRatePrescaler_8   8åˆ†é¢‘   
+*           SPI_BaudRatePrescaler_16  16åˆ†é¢‘  
+*           SPI_BaudRatePrescaler_256 256åˆ†é¢‘       
 *********************************************************************************************************/
 void SPISetSpeed(u8 SPI_BaudRatePrescaler)
 {
-  assert_param(IS_SPI_BAUDRATE_PRESCALER(SPI_BaudRatePrescaler)); //ÅĞ¶ÏÊäÈëµÄ²ÎÊıÊÇ·ñÕıÈ·
+  assert_param(IS_SPI_BAUDRATE_PRESCALER(SPI_BaudRatePrescaler)); //åˆ¤æ–­è¾“å…¥çš„å‚æ•°æ˜¯å¦æ­£ç¡®
   
-  USER_DEFINE_SPI_PORT->CR1 &= 0XFFC7;                            //³õÊ¼»¯GPIOËÙÂÊµÄ¼Ä´æÆ÷                     
-  USER_DEFINE_SPI_PORT->CR1 |= SPI_BaudRatePrescaler;             //ÉèÖÃSPI2ËÙÂÊ 
+  USER_DEFINE_SPI_PORT->CR1 &= 0XFFC7;                            //åˆå§‹åŒ–GPIOé€Ÿç‡çš„å¯„å­˜å™¨                     
+  USER_DEFINE_SPI_PORT->CR1 |= SPI_BaudRatePrescaler;             //è®¾ç½®SPI2é€Ÿç‡ 
   
-  SPI_Cmd(USER_DEFINE_SPI_PORT, ENABLE);                          //Ê¹ÄÜSPIÍâÉè
+  SPI_Cmd(USER_DEFINE_SPI_PORT, ENABLE);                          //ä½¿èƒ½SPIå¤–è®¾
 } 
 
 /*********************************************************************************************************
-* º¯ÊıÃû³Æ: SPIReadWriteByte
-* º¯Êı¹¦ÄÜ: ¶ÁĞ´Ò»¸ö×Ö½Ú 
-* ÊäÈë²ÎÊı: TxData:ÒªĞ´ÈëµÄ×Ö½Ú
-* Êä³ö²ÎÊı: void
-* ·µ »Ø Öµ: ¶ÁÈ¡µ½µÄ×Ö½Ú
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: SPIReadWriteByte
+* å‡½æ•°åŠŸèƒ½: è¯»å†™ä¸€ä¸ªå­—èŠ‚ 
+* è¾“å…¥å‚æ•°: TxData:è¦å†™å…¥çš„å­—èŠ‚
+* è¾“å‡ºå‚æ•°: void
+* è¿” å› å€¼: è¯»å–åˆ°çš„å­—èŠ‚
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 u8 SPIReadWriteByte(u8 TxData)
 {
-  u8 reTry = 0;       //ÖØÊÔ±êÖ¾Î»
+  u8 reTry = 0;       //é‡è¯•æ ‡å¿—ä½
   
-  //¼ì²éÖ¸¶¨µÄSPI±êÖ¾Î»ÉèÖÃÓë·ñ:·¢ËÍ»º´æ¿Õ±êÖ¾Î»
+  //æ£€æŸ¥æŒ‡å®šçš„SPIæ ‡å¿—ä½è®¾ç½®ä¸å¦:å‘é€ç¼“å­˜ç©ºæ ‡å¿—ä½
   while(SPI_I2S_GetFlagStatus(USER_DEFINE_SPI_PORT, SPI_I2S_FLAG_TXE) == RESET) 
   {
-    reTry++;          //Ã¿Ñ­»·Ò»´Î¼Ó1
+    reTry++;          //æ¯å¾ªç¯ä¸€æ¬¡åŠ 1
     
-    if(reTry > 200)   //¼ì²éÊ±¼ä¹ı³¤
+    if(reTry > 200)   //æ£€æŸ¥æ—¶é—´è¿‡é•¿
     {
-      return 0;       //¶ÁĞ´²Ù×÷Ê§°Ü
+      return 0;       //è¯»å†™æ“ä½œå¤±è´¥
     }
   }
 
-  SPI_I2S_SendData(USER_DEFINE_SPI_PORT, TxData);     //Í¨¹ıÍâÉèSPIx·¢ËÍÒ»¸öÊı¾İ
+  SPI_I2S_SendData(USER_DEFINE_SPI_PORT, TxData);     //é€šè¿‡å¤–è®¾SPIxå‘é€ä¸€ä¸ªæ•°æ®
   
-  reTry = 0;          //ÇåÁã
+  reTry = 0;          //æ¸…é›¶
 
-  //¼ì²éÖ¸¶¨µÄSPI±êÖ¾Î»ÉèÖÃÓë·ñ:½ÓÊÜ»º´æ·Ç¿Õ±êÖ¾Î»
+  //æ£€æŸ¥æŒ‡å®šçš„SPIæ ‡å¿—ä½è®¾ç½®ä¸å¦:æ¥å—ç¼“å­˜éç©ºæ ‡å¿—ä½
   while (SPI_I2S_GetFlagStatus(USER_DEFINE_SPI_PORT, SPI_I2S_FLAG_RXNE) == RESET) 
   {
-    reTry++;          //Ã¿Ñ­»·Ò»´Î¼Ó1
+    reTry++;          //æ¯å¾ªç¯ä¸€æ¬¡åŠ 1
     
-    if(reTry > 200)   //¼ì²éÊ±¼ä¹ı³¤
+    if(reTry > 200)   //æ£€æŸ¥æ—¶é—´è¿‡é•¿
     {
-      return 0;       //¶ÁĞ´²Ù×÷Ê§°Ü
+      return 0;       //è¯»å†™æ“ä½œå¤±è´¥
     }
   }
   
-  return SPI_I2S_ReceiveData(USER_DEFINE_SPI_PORT);   //·µ»ØÍ¨¹ıSPIx×î½ü½ÓÊÕµÄÊı¾İ
+  return SPI_I2S_ReceiveData(USER_DEFINE_SPI_PORT);   //è¿”å›é€šè¿‡SPIxæœ€è¿‘æ¥æ”¶çš„æ•°æ®
 }
