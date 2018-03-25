@@ -1,155 +1,155 @@
 /*********************************************************************************************************
-* Ä£¿éÃû³Æ: I2C.c
-* Õª    Òª: 
-* µ±Ç°°æ±¾: 1.0.0
-* ×÷    Õß: 
-* Íê³ÉÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ÄÚ    ÈÝ:
-* ×¢    Òâ: none                                                                  
+* æ¨¡å—åç§°: I2C.c
+* æ‘˜    è¦: 
+* å½“å‰ç‰ˆæœ¬: 1.0.0
+* ä½œ    è€…: 666immortal
+* å®Œæˆæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* å†…    å®¹:
+* æ³¨    æ„: none                                                                  
 **********************************************************************************************************
-* È¡´ú°æ±¾: 
-* ×÷    Õß:
-* Íê³ÉÈÕÆÚ: 
-* ÐÞ¸ÄÄÚÈÝ:
-* ÐÞ¸ÄÎÄ¼þ: 
+* å–ä»£ç‰ˆæœ¬: 
+* ä½œ    è€…:
+* å®Œæˆæ—¥æœŸ: 
+* ä¿®æ”¹å†…å®¹:
+* ä¿®æ”¹æ–‡ä»¶: 
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              °üº¬Í·ÎÄ¼þ
+*                                              åŒ…å«å¤´æ–‡ä»¶
 *********************************************************************************************************/
 #include "I2C.h"
 #include "SysTick.h"
 #include <stm32f10x_conf.h>
 
 /*********************************************************************************************************
-*                                              ºê¶¨Òå
+*                                              å®å®šä¹‰
 *********************************************************************************************************/
-//¶ÁÈ¡SDA¶Ë¿Ú
+//è¯»å–SDAç«¯å£
 #define READ_SDA()   	GPIO_ReadInputDataBit(USER_DEFINE_I2C_SDA_GPIO_PORT, USER_DEFINE_I2C_SDA_GPIO_PIN)  
 
-//Ê±ÖÓÏßSCLÊä³ö¸ßµçÆ½
+//æ—¶é’Ÿçº¿SCLè¾“å‡ºé«˜ç”µå¹³
 #define SET_I2C_SCL()	GPIO_SetBits(USER_DEFINE_I2C_SCL_GPIO_PORT, USER_DEFINE_I2C_SCL_GPIO_PIN)   
-//Ê±ÖÓÏßSCLÊä³öµÍµçÆ½
+//æ—¶é’Ÿçº¿SCLè¾“å‡ºä½Žç”µå¹³
 #define CLR_I2C_SCL()	GPIO_ResetBits(USER_DEFINE_I2C_SCL_GPIO_PORT, USER_DEFINE_I2C_SCL_GPIO_PIN)  
 
-//Êý¾ÝÏßSDAÊä³ö¸ßµçÆ½
+//æ•°æ®çº¿SDAè¾“å‡ºé«˜ç”µå¹³
 #define SET_I2C_SDA()	GPIO_SetBits(USER_DEFINE_I2C_SDA_GPIO_PORT, USER_DEFINE_I2C_SDA_GPIO_PIN)  
-//Êý¾ÝÏßSDAÊä³öµÍµçÆ½
+//æ•°æ®çº¿SDAè¾“å‡ºä½Žç”µå¹³
 #define CLR_I2C_SDA()	GPIO_ResetBits(USER_DEFINE_I2C_SDA_GPIO_PORT, USER_DEFINE_I2C_SDA_GPIO_PIN)  
 
-#define ACK       1   //¶ÁÈ¡Ò»¸ö×Ö½Úºó£¬·¢ËÍACK
-#define NACK      0   //¶ÁÈ¡Ò»¸ö×Ö½Úºó£¬·¢ËÍNACK
+#define ACK       1   //è¯»å–ä¸€ä¸ªå­—èŠ‚åŽï¼Œå‘é€ACK
+#define NACK      0   //è¯»å–ä¸€ä¸ªå­—èŠ‚åŽï¼Œå‘é€NACK
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿±äÁ¿
+*                                              å†…éƒ¨å˜é‡
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊýÉùÃ÷
+*                                              å†…éƒ¨å‡½æ•°å£°æ˜Ž
 *********************************************************************************************************/
-static  void  ConfigI2CGPIO(void);    //ÅäÖÃI2CµÄGPIO
-static  void  SetSDAAsInput(void);    //½«SDA¶ËÉèÖÃÎªÊäÈë
-static  void  SetSDAAsOutput(void);   //½«SDA¶ËÉèÖÃÎªÊä³ö
+static  void  ConfigI2CGPIO(void);    //é…ç½®I2Cçš„GPIO
+static  void  SetSDAAsInput(void);    //å°†SDAç«¯è®¾ç½®ä¸ºè¾“å…¥
+static  void  SetSDAAsOutput(void);   //å°†SDAç«¯è®¾ç½®ä¸ºè¾“å‡º
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊýÊµÏÖ
+*                                              å†…éƒ¨å‡½æ•°å®žçŽ°
 *********************************************************************************************************/
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: ConfigI2CGPIO
-* º¯Êý¹¦ÄÜ: ÅäÖÃI2CµÄGPIO 
-* ÊäÈë²ÎÊý: void 
-* Êä³ö²ÎÊý: void 
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: ConfigI2CGPIO
+* å‡½æ•°åŠŸèƒ½: é…ç½®I2Cçš„GPIO 
+* è¾“å…¥å‚æ•°: void 
+* è¾“å‡ºå‚æ•°: void 
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 static  void  ConfigI2CGPIO(void)
 {
-  GPIO_InitTypeDef GPIO_InitStructure;    //¶¨Òå½á¹¹ÌåGPIO_InitStructure,ÓÃÀ´ÅäÖÃI2CµÄGPIO
+  GPIO_InitTypeDef GPIO_InitStructure;    //å®šä¹‰ç»“æž„ä½“GPIO_InitStructure,ç”¨æ¥é…ç½®I2Cçš„GPIO
 
-  RCC_APB2PeriphClockCmd(USER_DEFINE_I2C_SCL_GPIO_CLK, ENABLE);       //Ê¹ÄÜI2C.SCLµÄÊ±ÖÓ 
+  RCC_APB2PeriphClockCmd(USER_DEFINE_I2C_SCL_GPIO_CLK, ENABLE);       //ä½¿èƒ½I2C.SCLçš„æ—¶é’Ÿ 
 
-  GPIO_InitStructure.GPIO_Pin   = USER_DEFINE_I2C_SCL_GPIO_PIN;       //ÉèÖÃI2C.SCLµÄÒý½Å
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;                   //ÉèÖÃI/O¿ÚËÙÂÊÎª50MHz
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;                   //ÍÆÍìÊä³öÄ£Ê½
-  GPIO_Init(USER_DEFINE_I2C_SCL_GPIO_PORT, &GPIO_InitStructure);      //¸ù¾Ý²ÎÊý³õÊ¼»¯I2C.SCLµÄGPIO¶Ë¿Ú
+  GPIO_InitStructure.GPIO_Pin   = USER_DEFINE_I2C_SCL_GPIO_PIN;       //è®¾ç½®I2C.SCLçš„å¼•è„š
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;                   //è®¾ç½®I/Oå£é€ŸçŽ‡ä¸º50MHz
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;                   //æŽ¨æŒ½è¾“å‡ºæ¨¡å¼
+  GPIO_Init(USER_DEFINE_I2C_SCL_GPIO_PORT, &GPIO_InitStructure);      //æ ¹æ®å‚æ•°åˆå§‹åŒ–I2C.SCLçš„GPIOç«¯å£
   
-  GPIO_SetBits(USER_DEFINE_I2C_SCL_GPIO_PORT, USER_DEFINE_I2C_SCL_GPIO_PIN);    //I2C.SCL³õÊ¼»¯Îª¸ßµçÆ½
+  GPIO_SetBits(USER_DEFINE_I2C_SCL_GPIO_PORT, USER_DEFINE_I2C_SCL_GPIO_PIN);    //I2C.SCLåˆå§‹åŒ–ä¸ºé«˜ç”µå¹³
                                                                     
-  GPIO_InitStructure.GPIO_Pin   = USER_DEFINE_I2C_SDA_GPIO_PIN;       //ÉèÖÃI2C.SDAµÄÒý½Å
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;                   //ÉèÖÃI/O¿ÚËÙÂÊÎª50MHz
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;                   //ÍÆÍìÊä³öÄ£Ê½
-  GPIO_Init(USER_DEFINE_I2C_SDA_GPIO_PORT, &GPIO_InitStructure);      //¸ù¾Ý²ÎÊý³õÊ¼»¯I2C.SDAµÄGPIO¶Ë¿Ú
+  GPIO_InitStructure.GPIO_Pin   = USER_DEFINE_I2C_SDA_GPIO_PIN;       //è®¾ç½®I2C.SDAçš„å¼•è„š
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;                   //è®¾ç½®I/Oå£é€ŸçŽ‡ä¸º50MHz
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;                   //æŽ¨æŒ½è¾“å‡ºæ¨¡å¼
+  GPIO_Init(USER_DEFINE_I2C_SDA_GPIO_PORT, &GPIO_InitStructure);      //æ ¹æ®å‚æ•°åˆå§‹åŒ–I2C.SDAçš„GPIOç«¯å£
 
-  GPIO_SetBits(USER_DEFINE_I2C_SDA_GPIO_PORT, USER_DEFINE_I2C_SDA_GPIO_PIN);    //I2C.SDA³õÊ¼»¯Îª¸ßµçÆ½
+  GPIO_SetBits(USER_DEFINE_I2C_SDA_GPIO_PORT, USER_DEFINE_I2C_SDA_GPIO_PIN);    //I2C.SDAåˆå§‹åŒ–ä¸ºé«˜ç”µå¹³
 } 
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: SetSDAAsInput
-* º¯Êý¹¦ÄÜ: ½«SDA¶ËÉèÖÃÎªÊäÈë 
-* ÊäÈë²ÎÊý: void 
-* Êä³ö²ÎÊý: void  
-* ·µ »Ø Öµ: void  
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: SetSDAAsInput
+* å‡½æ•°åŠŸèƒ½: å°†SDAç«¯è®¾ç½®ä¸ºè¾“å…¥ 
+* è¾“å…¥å‚æ•°: void 
+* è¾“å‡ºå‚æ•°: void  
+* è¿” å›ž å€¼: void  
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 static  void  SetSDAAsInput(void)
 {
-  GPIO_InitTypeDef GPIO_InitStructure;              //¶¨Òå½á¹¹ÌåGPIO_InitStructure£¬ÓÃÀ´ÅäÖÃI2C.SDA
+  GPIO_InitTypeDef GPIO_InitStructure;              //å®šä¹‰ç»“æž„ä½“GPIO_InitStructureï¼Œç”¨æ¥é…ç½®I2C.SDA
   
-  GPIO_InitStructure.GPIO_Pin   = USER_DEFINE_I2C_SDA_GPIO_PIN;   //ÉèÖÃI2C.SDAµÄÒý½Å
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;               //ÉèÖÃI/O¿ÚËÙÂÊÎª50MHz
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IPU;                  //ÉÏÀ­ÊäÈëÄ£Ê½
+  GPIO_InitStructure.GPIO_Pin   = USER_DEFINE_I2C_SDA_GPIO_PIN;   //è®¾ç½®I2C.SDAçš„å¼•è„š
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;               //è®¾ç½®I/Oå£é€ŸçŽ‡ä¸º50MHz
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IPU;                  //ä¸Šæ‹‰è¾“å…¥æ¨¡å¼
   
-  GPIO_Init(USER_DEFINE_I2C_SDA_GPIO_PORT, &GPIO_InitStructure);  //¸ù¾Ý²ÎÊý³õÊ¼»¯I2C.SDAµÄGPIO¶Ë¿Ú
+  GPIO_Init(USER_DEFINE_I2C_SDA_GPIO_PORT, &GPIO_InitStructure);  //æ ¹æ®å‚æ•°åˆå§‹åŒ–I2C.SDAçš„GPIOç«¯å£
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: SetSDAAsOutput
-* º¯Êý¹¦ÄÜ: ½«SDA¶ËÉèÖÃÎªÊä³ö 
-* ÊäÈë²ÎÊý: void 
-* Êä³ö²ÎÊý: void  
-* ·µ »Ø Öµ: void  
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: SetSDAAsOutput
+* å‡½æ•°åŠŸèƒ½: å°†SDAç«¯è®¾ç½®ä¸ºè¾“å‡º 
+* è¾“å…¥å‚æ•°: void 
+* è¾“å‡ºå‚æ•°: void  
+* è¿” å›ž å€¼: void  
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 static  void  SetSDAAsOutput(void)
 {
-  GPIO_InitTypeDef GPIO_InitStructure;                //¶¨Òå½á¹¹ÌåGPIO_InitStructure,ÓÃÀ´ÅäÖÃI2C.SDA
+  GPIO_InitTypeDef GPIO_InitStructure;                //å®šä¹‰ç»“æž„ä½“GPIO_InitStructure,ç”¨æ¥é…ç½®I2C.SDA
   
-  GPIO_InitStructure.GPIO_Pin   = USER_DEFINE_I2C_SDA_GPIO_PIN;   //ÉèÖÃI2C.SDAµÄÒý½Å
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;               //ÉèÖÃI/O¿ÚËÙÂÊÎª50MHz
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;               //ÍÆÍìÊä³ö
+  GPIO_InitStructure.GPIO_Pin   = USER_DEFINE_I2C_SDA_GPIO_PIN;   //è®¾ç½®I2C.SDAçš„å¼•è„š
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;               //è®¾ç½®I/Oå£é€ŸçŽ‡ä¸º50MHz
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;               //æŽ¨æŒ½è¾“å‡º
   
-  GPIO_Init(USER_DEFINE_I2C_SDA_GPIO_PORT, &GPIO_InitStructure);  //¸ù¾Ý²ÎÊý³õÊ¼»¯I2C.SDAµÄGPIO¶Ë¿Ú
+  GPIO_Init(USER_DEFINE_I2C_SDA_GPIO_PORT, &GPIO_InitStructure);  //æ ¹æ®å‚æ•°åˆå§‹åŒ–I2C.SDAçš„GPIOç«¯å£
 }
 
 /*********************************************************************************************************
-*                                              APIº¯ÊýÊµÏÖ
+*                                              APIå‡½æ•°å®žçŽ°
 *********************************************************************************************************/
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: InitI2C
-* º¯Êý¹¦ÄÜ: ³õÊ¼»¯IIC 
-* ÊäÈë²ÎÊý: void 
-* Êä³ö²ÎÊý: void  
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ:
+* å‡½æ•°åç§°: InitI2C
+* å‡½æ•°åŠŸèƒ½: åˆå§‹åŒ–IIC 
+* è¾“å…¥å‚æ•°: void 
+* è¾“å‡ºå‚æ•°: void  
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„:
 *********************************************************************************************************/
 void InitI2C(void)
 {
-  ConfigI2CGPIO();        //ÅäÖÃI2CµÄGPIO
+  ConfigI2CGPIO();        //é…ç½®I2Cçš„GPIO
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: GenI2CStartSig
-* º¯Êý¹¦ÄÜ: ²úÉúIICÆðÊ¼Ê±Ðò£¬×¼±¸·¢ËÍ»ò½ÓÊÕÊý¾ÝÇ°±ØÐëÓÉÆðÊ¼ÐòÁÐ¿ªÊ¼ 
-* ÊäÈë²ÎÊý: void 
-* Êä³ö²ÎÊý: void  
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: SCLÎª¸ßµçÆ½Ê±£¬SDAÓÉ¸ßµçÆ½ÏòµÍµçÆ½Ìø±ä£¬¿ªÊ¼´«ÊäÊý¾Ý 
-*           Éú³ÉÏÂÍ¼ËùÊ¾µÄ²¨ÐÎÍ¼£¬¼´ÎªÆðÊ¼Ê±Ðò 
+* å‡½æ•°åç§°: GenI2CStartSig
+* å‡½æ•°åŠŸèƒ½: äº§ç”ŸIICèµ·å§‹æ—¶åºï¼Œå‡†å¤‡å‘é€æˆ–æŽ¥æ”¶æ•°æ®å‰å¿…é¡»ç”±èµ·å§‹åºåˆ—å¼€å§‹ 
+* è¾“å…¥å‚æ•°: void 
+* è¾“å‡ºå‚æ•°: void  
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: SCLä¸ºé«˜ç”µå¹³æ—¶ï¼ŒSDAç”±é«˜ç”µå¹³å‘ä½Žç”µå¹³è·³å˜ï¼Œå¼€å§‹ä¼ è¾“æ•°æ® 
+*           ç”Ÿæˆä¸‹å›¾æ‰€ç¤ºçš„æ³¢å½¢å›¾ï¼Œå³ä¸ºèµ·å§‹æ—¶åº 
 *                1 2    3     4   
 *                    __________     
 *           SCL : __/          \_____ 
@@ -158,24 +158,24 @@ void InitI2C(void)
 *********************************************************************************************************/
 void GenI2CStartSig(void)
 {
-  SetSDAAsOutput();       //½«Êý¾ÝÏßSDAÉèÖÃÎªÊä³ö
-  SET_I2C_SDA();          //1#Êý¾ÝÏßSDAÊä³ö¸ßµçÆ½
-  SET_I2C_SCL();          //2#Ê±ÖÓÏßSCLÊä³ö¸ßµçÆ½£¬2-3Ö®¼äµÄ¼ä¸ôÐë>4.7us   
-  DelayNus(4);            //ÑÓÊ±4us
-  CLR_I2C_SDA();          //3#Êý¾ÝÏßSDAÊä³öµÍµçÆ½£¬3-4Ö®¼äµÄ¼ä¸ôÐë>4.0us 
-  DelayNus(4);            //ÑÓÊ±4us
-  CLR_I2C_SCL();          //4#Ê±ÖÓÏßSCLÊä³öµÍµçÆ½£¬±£³ÖI2CµÄÊ±ÖÓÏßSCLÎªµÍµçÆ½£¬×¼±¸·¢ËÍ»ò½ÓÊÕÊý¾Ý 
+  SetSDAAsOutput();       //å°†æ•°æ®çº¿SDAè®¾ç½®ä¸ºè¾“å‡º
+  SET_I2C_SDA();          //1#æ•°æ®çº¿SDAè¾“å‡ºé«˜ç”µå¹³
+  SET_I2C_SCL();          //2#æ—¶é’Ÿçº¿SCLè¾“å‡ºé«˜ç”µå¹³ï¼Œ2-3ä¹‹é—´çš„é—´éš”é¡»>4.7us   
+  DelayNus(4);            //å»¶æ—¶4us
+  CLR_I2C_SDA();          //3#æ•°æ®çº¿SDAè¾“å‡ºä½Žç”µå¹³ï¼Œ3-4ä¹‹é—´çš„é—´éš”é¡»>4.0us 
+  DelayNus(4);            //å»¶æ—¶4us
+  CLR_I2C_SCL();          //4#æ—¶é’Ÿçº¿SCLè¾“å‡ºä½Žç”µå¹³ï¼Œä¿æŒI2Cçš„æ—¶é’Ÿçº¿SCLä¸ºä½Žç”µå¹³ï¼Œå‡†å¤‡å‘é€æˆ–æŽ¥æ”¶æ•°æ® 
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: GenI2CStopSig
-* º¯Êý¹¦ÄÜ: ²úÉúIICÍ£Ö¹Ê±Ðò 
-* ÊäÈë²ÎÊý: void 
-* Êä³ö²ÎÊý: void  
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: SCLÎª¸ßµçÆ½Ê±£¬SDAÓÉµÍµçÆ½Ïò¸ßµçÆ½Ìø±ä£¬½áÊø´«ÊäÊý¾Ý 
-*          Éú³ÉÏÂÍ¼ËùÊ¾µÄ²¨ÐÎÍ¼£¬¼´ÎªÍ£Ö¹Ê±Ðò 
+* å‡½æ•°åç§°: GenI2CStopSig
+* å‡½æ•°åŠŸèƒ½: äº§ç”ŸIICåœæ­¢æ—¶åº 
+* è¾“å…¥å‚æ•°: void 
+* è¾“å‡ºå‚æ•°: void  
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: SCLä¸ºé«˜ç”µå¹³æ—¶ï¼ŒSDAç”±ä½Žç”µå¹³å‘é«˜ç”µå¹³è·³å˜ï¼Œç»“æŸä¼ è¾“æ•°æ® 
+*          ç”Ÿæˆä¸‹å›¾æ‰€ç¤ºçš„æ³¢å½¢å›¾ï¼Œå³ä¸ºåœæ­¢æ—¶åº 
 *                1 2   3  4   
 *                       _______________     
 *          SCL : ______/          
@@ -184,23 +184,23 @@ void GenI2CStartSig(void)
 *********************************************************************************************************/
 void GenI2CStopSig(void)
 {
-  SetSDAAsOutput();       //½«Êý¾ÝÏßSDAÉèÖÃÎªÊä³ö
-  CLR_I2C_SCL();          //1#Ê±ÖÓÏßSCLÊä³öµÍµçÆ½
-  CLR_I2C_SDA();          //2#Êý¾ÝÏßSDAÊä³öµÍµçÆ½
-  DelayNus(4);            //ÑÓÊ±4us
-  SET_I2C_SCL();          //3#Ê±ÖÓÏßSCLÊä³ö¸ßµçÆ½£¬3-4Ö®¼äµÄ¼ä¸ôÐë>4.7us 
-  SET_I2C_SDA();          //4#Êý¾ÝÏßSDAÊä³ö¸ßµçÆ½£¬·¢ËÍI2C×ÜÏß½áÊøÐÅºÅ£¬4Ö®ºóSDAÐë±£³Ö²»Ð¡ÓÚ4.0usµÄ¸ßµçÆ½
-  DelayNus(4);            //ÑÓÊ±4us
+  SetSDAAsOutput();       //å°†æ•°æ®çº¿SDAè®¾ç½®ä¸ºè¾“å‡º
+  CLR_I2C_SCL();          //1#æ—¶é’Ÿçº¿SCLè¾“å‡ºä½Žç”µå¹³
+  CLR_I2C_SDA();          //2#æ•°æ®çº¿SDAè¾“å‡ºä½Žç”µå¹³
+  DelayNus(4);            //å»¶æ—¶4us
+  SET_I2C_SCL();          //3#æ—¶é’Ÿçº¿SCLè¾“å‡ºé«˜ç”µå¹³ï¼Œ3-4ä¹‹é—´çš„é—´éš”é¡»>4.7us 
+  SET_I2C_SDA();          //4#æ•°æ®çº¿SDAè¾“å‡ºé«˜ç”µå¹³ï¼Œå‘é€I2Cæ€»çº¿ç»“æŸä¿¡å·ï¼Œ4ä¹‹åŽSDAé¡»ä¿æŒä¸å°äºŽ4.0usçš„é«˜ç”µå¹³
+  DelayNus(4);            //å»¶æ—¶4us
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: I2CSendByte
-* º¯Êý¹¦ÄÜ: ·¢ËÍÒ»¸ö×Ö½Ú£¬Êý¾Ý´Ó¸ßÎ»¿ªÊ¼·¢ËÍ³öÈ¥ 
-* ÊäÈë²ÎÊý: txd
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: ÏÂÃæÊÇ¾ßÌåµÄÊ±ÐòÍ¼ 
+* å‡½æ•°åç§°: I2CSendByte
+* å‡½æ•°åŠŸèƒ½: å‘é€ä¸€ä¸ªå­—èŠ‚ï¼Œæ•°æ®ä»Žé«˜ä½å¼€å§‹å‘é€å‡ºåŽ» 
+* è¾“å…¥å‚æ•°: txd
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: ä¸‹é¢æ˜¯å…·ä½“çš„æ—¶åºå›¾ 
 *                1 2     3      4
 *                         ______
 *           SCL: ________/      \______    
@@ -209,40 +209,40 @@ void GenI2CStopSig(void)
 *********************************************************************************************************/
 void I2CSendByte(u8 txd)
 {                        
-  u8 t;                   //Ñ­»·¼ÆÊýÆ÷
+  u8 t;                   //å¾ªçŽ¯è®¡æ•°å™¨
   
-  SetSDAAsOutput();       //½«Êý¾ÝÏßSDAÉèÖÃÎªÊä³ö
-  CLR_I2C_SCL();          //1#Ê±ÖÓÏßSCLÊä³öµÍµçÆ½,¿ªÊ¼Êý¾Ý´«Êä
+  SetSDAAsOutput();       //å°†æ•°æ®çº¿SDAè®¾ç½®ä¸ºè¾“å‡º
+  CLR_I2C_SCL();          //1#æ—¶é’Ÿçº¿SCLè¾“å‡ºä½Žç”µå¹³,å¼€å§‹æ•°æ®ä¼ è¾“
   
-  for(t = 0; t < 8; t++)  //Ñ­»·8´Î£¬´Ó¸ßµ½µÍÈ¡³ö×Ö½ÚµÄ8¸öÎ»
+  for(t = 0; t < 8; t++)  //å¾ªçŽ¯8æ¬¡ï¼Œä»Žé«˜åˆ°ä½Žå–å‡ºå­—èŠ‚çš„8ä¸ªä½
   {    
-    if((txd&0x80) >> 7)   //2#È¡³ö×Ö½Ú×î¸ßÎ»£¬²¢ÅÐ¶ÏÎª¡®0¡¯»¹ÊÇ¡®1¡¯£¬´Ó¶ø×ö³öÏàÓ¦µÄ²Ù×÷
+    if((txd&0x80) >> 7)   //2#å–å‡ºå­—èŠ‚æœ€é«˜ä½ï¼Œå¹¶åˆ¤æ–­ä¸ºâ€˜0â€™è¿˜æ˜¯â€˜1â€™ï¼Œä»Žè€Œåšå‡ºç›¸åº”çš„æ“ä½œ
     {
-      SET_I2C_SDA();      //Êý¾ÝÏßSDAÊä³ö¸ßµçÆ½£¬Êý¾ÝÎ»Îª¡®1¡¯
+      SET_I2C_SDA();      //æ•°æ®çº¿SDAè¾“å‡ºé«˜ç”µå¹³ï¼Œæ•°æ®ä½ä¸ºâ€˜1â€™
     }
     else
     {  
-      CLR_I2C_SDA();      //Êý¾ÝÏßSDAÊä³öµÍµçÆ½£¬Êý¾ÝÎ»Îª¡®0¡¯
+      CLR_I2C_SDA();      //æ•°æ®çº¿SDAè¾“å‡ºä½Žç”µå¹³ï¼Œæ•°æ®ä½ä¸ºâ€˜0â€™
     }
     
-    txd <<= 1;            //×óÒÆÒ»Î»£¬´Î¸ßÎ»ÒÆµ½×î¸ßÎ»
+    txd <<= 1;            //å·¦ç§»ä¸€ä½ï¼Œæ¬¡é«˜ä½ç§»åˆ°æœ€é«˜ä½
     
-    DelayNus(2);          //ÑÓÊ±2us
-    SET_I2C_SCL();        //3#Ê±ÖÓÏßSCLÊä³ö¸ßµçÆ½
-    DelayNus(2);          //ÑÓÊ±2us
-    CLR_I2C_SCL();        //4#Ê±ÖÓÏßSCLÊä³öµÍµçÆ½
-    DelayNus(2);          //ÑÓÊ±2us  
+    DelayNus(2);          //å»¶æ—¶2us
+    SET_I2C_SCL();        //3#æ—¶é’Ÿçº¿SCLè¾“å‡ºé«˜ç”µå¹³
+    DelayNus(2);          //å»¶æ—¶2us
+    CLR_I2C_SCL();        //4#æ—¶é’Ÿçº¿SCLè¾“å‡ºä½Žç”µå¹³
+    DelayNus(2);          //å»¶æ—¶2us  
   }  
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: I2CReadByte
-* º¯Êý¹¦ÄÜ: ¶ÁÈ¡Ò»¸ö×Ö½Ú£¬µ±ack=1Ê±£¬·¢ËÍACK£¬µ±ack=0Ê±£¬·¢ËÍnACK 
-* ÊäÈë²ÎÊý: txd
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: ÏÂÃæÊÇ¾ßÌåµÄÊ±ÐòÍ¼
+* å‡½æ•°åç§°: I2CReadByte
+* å‡½æ•°åŠŸèƒ½: è¯»å–ä¸€ä¸ªå­—èŠ‚ï¼Œå½“ack=1æ—¶ï¼Œå‘é€ACKï¼Œå½“ack=0æ—¶ï¼Œå‘é€nACK 
+* è¾“å…¥å‚æ•°: txd
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: ä¸‹é¢æ˜¯å…·ä½“çš„æ—¶åºå›¾
 *                       ______
 *           SCL: ______/      \___        
 *                ____________________    
@@ -250,48 +250,48 @@ void I2CSendByte(u8 txd)
 *********************************************************************************************************/                   
 u8 I2CReadByte(u8 ack)
 {
-  u8 i = 0;                 //iÎªÑ­»·¼ÆÊýÆ÷
-  u8 receive = 0;           //receiveÓÃÀ´´æ·Å½ÓÊÕµÄÊý¾Ý
+  u8 i = 0;                 //iä¸ºå¾ªçŽ¯è®¡æ•°å™¨
+  u8 receive = 0;           //receiveç”¨æ¥å­˜æ”¾æŽ¥æ”¶çš„æ•°æ®
   
-  SetSDAAsInput();          //1#½«Êý¾ÝÏßSDAÉèÖÃÎªÊäÈë
+  SetSDAAsInput();          //1#å°†æ•°æ®çº¿SDAè®¾ç½®ä¸ºè¾“å…¥
   
-  for(i = 0; i < 8; i++ )   //Ñ­»·8´Î£¬´Ó¸ßµ½µÍ¶ÁÈ¡×Ö½ÚµÄ8¸öÎ»
+  for(i = 0; i < 8; i++ )   //å¾ªçŽ¯8æ¬¡ï¼Œä»Žé«˜åˆ°ä½Žè¯»å–å­—èŠ‚çš„8ä¸ªä½
   {
-    CLR_I2C_SCL();          //2#Ê±ÖÓÏßSCLÊä³öµÍµçÆ½
-    DelayNus(2);            //ÑÓÊ±2us
-    SET_I2C_SCL();          //3#Ê±ÖÓÏßSCLÊä³ö¸ßµçÆ½
+    CLR_I2C_SCL();          //2#æ—¶é’Ÿçº¿SCLè¾“å‡ºä½Žç”µå¹³
+    DelayNus(2);            //å»¶æ—¶2us
+    SET_I2C_SCL();          //3#æ—¶é’Ÿçº¿SCLè¾“å‡ºé«˜ç”µå¹³
     
-    receive <<= 1;          //×óÒÆÒ»Î»£¬¿Õ³öÐÂµÄ×îµÍÎ»
+    receive <<= 1;          //å·¦ç§»ä¸€ä½ï¼Œç©ºå‡ºæ–°çš„æœ€ä½Žä½
     
-    if(READ_SDA())          //4#¶ÁÈ¡Êý¾ÝÏßSDAµÄÊý¾ÝÎ»
+    if(READ_SDA())          //4#è¯»å–æ•°æ®çº¿SDAçš„æ•°æ®ä½
     {
-      receive++;            //ÔÚSCLµÄÉÏÉýÑØºó£¬Êý¾ÝÒÑ¾­ÎÈ¶¨£¬Òò´Ë¿ÉÒÔÈ¡¸ÃÊý¾Ý£¬´æÈë×îµÍÎ»
+      receive++;            //åœ¨SCLçš„ä¸Šå‡æ²¿åŽï¼Œæ•°æ®å·²ç»ç¨³å®šï¼Œå› æ­¤å¯ä»¥å–è¯¥æ•°æ®ï¼Œå­˜å…¥æœ€ä½Žä½
     }
     
-    DelayNus(1);            //ÑÓÊ±1us
+    DelayNus(1);            //å»¶æ—¶1us
   } 
   
-  if (NACK == ack)          //Èç¹ûackÎªNACK
+  if (NACK == ack)          //å¦‚æžœackä¸ºNACK
   {   
-    SendI2CNAck();          //·¢ËÍNACK£¬ÎÞÓ¦´ð
+    SendI2CNAck();          //å‘é€NACKï¼Œæ— åº”ç­”
   } 
-  else                      //Èç¹ûackÎªACK
+  else                      //å¦‚æžœackä¸ºACK
   {
-    SendI2CAck();           //·¢ËÍACK£¬Ó¦´ð   
+    SendI2CAck();           //å‘é€ACKï¼Œåº”ç­”   
   }
   
-  return receive;           //·µ»Ø¶ÁÈ¡µ½µÄÊý¾Ý
+  return receive;           //è¿”å›žè¯»å–åˆ°çš„æ•°æ®
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: I2CWaitACK
-* º¯Êý¹¦ÄÜ: µÈ´ýÓ¦´ðÐÅºÅµ½À´ 
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: 1£¬½ÓÊÕÓ¦´ðÊ§°Ü£»0£¬½ÓÊÕÓ¦´ð³É¹¦
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: µ±SDAÀ­µÍºó£¬±íÊ¾½ÓÊÕµ½ACKÐÅºÅ£¬È»ºó£¬À­µÍSCL£¬¸ù¾ÝÊµ¼ÊÇé¿ö×ö³öÊÇ·ñ¼ÌÐø´«µÝÐÅºÅµÄÅÐ¶Ï
-*           ´Ë´¦±íÊ¾·¢ËÍ¶ËÊÕµ½½ÓÊÕ¶ËµÄACK
+* å‡½æ•°åç§°: I2CWaitACK
+* å‡½æ•°åŠŸèƒ½: ç­‰å¾…åº”ç­”ä¿¡å·åˆ°æ¥ 
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: 1ï¼ŒæŽ¥æ”¶åº”ç­”å¤±è´¥ï¼›0ï¼ŒæŽ¥æ”¶åº”ç­”æˆåŠŸ
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: å½“SDAæ‹‰ä½ŽåŽï¼Œè¡¨ç¤ºæŽ¥æ”¶åˆ°ACKä¿¡å·ï¼Œç„¶åŽï¼Œæ‹‰ä½ŽSCLï¼Œæ ¹æ®å®žé™…æƒ…å†µåšå‡ºæ˜¯å¦ç»§ç»­ä¼ é€’ä¿¡å·çš„åˆ¤æ–­
+*           æ­¤å¤„è¡¨ç¤ºå‘é€ç«¯æ”¶åˆ°æŽ¥æ”¶ç«¯çš„ACK
 *                _______|____     
 *           SCL:        |    \_________    
 *                _______|     
@@ -301,35 +301,35 @@ u8 I2CWaitAck(void)
 {
   u8 ucErrTime = 0;
   
-  SetSDAAsInput();        //½«Êý¾ÝÏßSDAÉèÖÃÎªÊä³ö
-  SET_I2C_SCL();          //Ê±ÖÓÏßSCLÊä³ö¸ßµçÆ½
-  DelayNus(1);            //ÑÓÊ±1us
+  SetSDAAsInput();        //å°†æ•°æ®çº¿SDAè®¾ç½®ä¸ºè¾“å‡º
+  SET_I2C_SCL();          //æ—¶é’Ÿçº¿SCLè¾“å‡ºé«˜ç”µå¹³
+  DelayNus(1);            //å»¶æ—¶1us
   
-  while(READ_SDA())       //¶Á»ØÀ´µÄÊý¾ÝÈç¹ûÊÇ¸ßµçÆ½£¬¼´½ÓÊÕ¶ËÃ»ÓÐÓ¦´ð
+  while(READ_SDA())       //è¯»å›žæ¥çš„æ•°æ®å¦‚æžœæ˜¯é«˜ç”µå¹³ï¼Œå³æŽ¥æ”¶ç«¯æ²¡æœ‰åº”ç­”
   {
-    ucErrTime++;          //¼ÆÊýÆ÷¼Ó1
+    ucErrTime++;          //è®¡æ•°å™¨åŠ 1
     
-    if(ucErrTime > 250)   //Èç¹û³¬¹ý250´Î£¬ÔòÅÐ¶ÏÎª½ÓÊÕ¶Ë³öÏÖ¹ÊÕÏ£¬Òò´Ë·¢ËÍ½áÊøÐÅºÅ
+    if(ucErrTime > 250)   //å¦‚æžœè¶…è¿‡250æ¬¡ï¼Œåˆ™åˆ¤æ–­ä¸ºæŽ¥æ”¶ç«¯å‡ºçŽ°æ•…éšœï¼Œå› æ­¤å‘é€ç»“æŸä¿¡å·
     {
-      GenI2CStopSig();    //²úÉúÒ»¸öÍ£Ö¹ÐÅºÅ
+      GenI2CStopSig();    //äº§ç”Ÿä¸€ä¸ªåœæ­¢ä¿¡å·
       
-      return 1;           //·µ»ØÖµÎª1£¬±íÊ¾Ã»ÓÐÊÕµ½Ó¦´ðÐÅºÅ
+      return 1;           //è¿”å›žå€¼ä¸º1ï¼Œè¡¨ç¤ºæ²¡æœ‰æ”¶åˆ°åº”ç­”ä¿¡å·
     }
   }
   
-  CLR_I2C_SCL();          //±íÊ¾ÒÑÊÕµ½Ó¦´ðÐÅºÅ£¬Ê±ÖÓÏßSCLÊä³öµÍµçÆ½£¬Ç¯×¡I2C×ÜÏß
+  CLR_I2C_SCL();          //è¡¨ç¤ºå·²æ”¶åˆ°åº”ç­”ä¿¡å·ï¼Œæ—¶é’Ÿçº¿SCLè¾“å‡ºä½Žç”µå¹³ï¼Œé’³ä½I2Cæ€»çº¿
   
-  return 0;               //·µ»ØÖµÎª0£¬±íÊ¾½ÓÊÕÓ¦´ð³É¹¦  
+  return 0;               //è¿”å›žå€¼ä¸º0ï¼Œè¡¨ç¤ºæŽ¥æ”¶åº”ç­”æˆåŠŸ  
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: SendI2CAck
-* º¯Êý¹¦ÄÜ: ·¢ËÍÓ¦´ðÐÅºÅ 
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: ÏÂÃæÊÇ¾ßÌåµÄÊ±ÐòÍ¼ 
+* å‡½æ•°åç§°: SendI2CAck
+* å‡½æ•°åŠŸèƒ½: å‘é€åº”ç­”ä¿¡å· 
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: ä¸‹é¢æ˜¯å…·ä½“çš„æ—¶åºå›¾ 
 *                 1 2     3      4
 *                         ______
 *           SCL: ________/      \______    
@@ -338,23 +338,23 @@ u8 I2CWaitAck(void)
 *********************************************************************************************************/
 void SendI2CAck(void)
 {
-  CLR_I2C_SCL();          //1#Ê±ÖÓÏßSCLÊä³öµÍµçÆ½£¬¿ªÊ¼´«ËÍÓ¦´ðÐÅºÅ
-  SetSDAAsOutput();       //½«Êý¾ÝÏßSDAÉèÖÃÎªÊä³ö
-  CLR_I2C_SDA();          //2#Êý¾ÝÏßSDAÊä³öµÍµçÆ½
-  DelayNus(2);            //ÑÓÊ±2us
-  SET_I2C_SCL();          //3#Ê±ÖÓÏßSCLÊä³ö¸ßµçÆ½,ÔÚSCLÉÏÉýÑØÇ°¾ÍÒª°ÑSDAÀ­µÍ£¬ÎªÓ¦´ðÐÅºÅ
-  DelayNus(2);            //ÑÓÊ±2us
-  CLR_I2C_SCL();          //4#Ê±ÖÓÏßSCLÊä³öµÍµçÆ½£¬Ç¯×¡I2C×ÜÏß
+  CLR_I2C_SCL();          //1#æ—¶é’Ÿçº¿SCLè¾“å‡ºä½Žç”µå¹³ï¼Œå¼€å§‹ä¼ é€åº”ç­”ä¿¡å·
+  SetSDAAsOutput();       //å°†æ•°æ®çº¿SDAè®¾ç½®ä¸ºè¾“å‡º
+  CLR_I2C_SDA();          //2#æ•°æ®çº¿SDAè¾“å‡ºä½Žç”µå¹³
+  DelayNus(2);            //å»¶æ—¶2us
+  SET_I2C_SCL();          //3#æ—¶é’Ÿçº¿SCLè¾“å‡ºé«˜ç”µå¹³,åœ¨SCLä¸Šå‡æ²¿å‰å°±è¦æŠŠSDAæ‹‰ä½Žï¼Œä¸ºåº”ç­”ä¿¡å·
+  DelayNus(2);            //å»¶æ—¶2us
+  CLR_I2C_SCL();          //4#æ—¶é’Ÿçº¿SCLè¾“å‡ºä½Žç”µå¹³ï¼Œé’³ä½I2Cæ€»çº¿
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: SendI2CNAck
-* º¯Êý¹¦ÄÜ: ²»·¢ËÍÓ¦´ðÐÅºÅ 
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: ÏÂÃæÊÇ¾ßÌåµÄÊ±ÐòÍ¼ 
+* å‡½æ•°åç§°: SendI2CNAck
+* å‡½æ•°åŠŸèƒ½: ä¸å‘é€åº”ç­”ä¿¡å· 
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: ä¸‹é¢æ˜¯å…·ä½“çš„æ—¶åºå›¾ 
 *               1 2     3      4
 *                        ______
 *          SCL: ________/      \______    
@@ -363,11 +363,11 @@ void SendI2CAck(void)
 *********************************************************************************************************/
 void SendI2CNAck(void)
 {
-  CLR_I2C_SCL();          //1#À­µÍÊ±ÖÓÏß£¬¿ªÊ¼´«ËÍ·ÇÓ¦´ðÐÅºÅ
-  SetSDAAsOutput();       //½«Êý¾ÝÏßSDAÉèÖÃÎªÊä³ö
-  SET_I2C_SDA();          //2#Êý¾ÝÏßSDAÊä³ö¸ßµçÆ½
-  DelayNus(2);            //ÑÓÊ±2us
-  SET_I2C_SCL();          //3#Ê±ÖÓÏßSCLÊä³ö¸ßµçÆ½£¬ÔÚSCLÉÏÉýÑØÇ°¾ÍÒª°ÑSDAÀ­¸ß£¬Îª·ÇÓ¦´ðÐÅºÅ
-  DelayNus(2);            //ÑÓÊ±2us
-  CLR_I2C_SCL();          //4#Ê±ÖÓÏßSCLÊä³öµÍµçÆ½£¬Ç¯×¡I2C×ÜÏß
+  CLR_I2C_SCL();          //1#æ‹‰ä½Žæ—¶é’Ÿçº¿ï¼Œå¼€å§‹ä¼ é€éžåº”ç­”ä¿¡å·
+  SetSDAAsOutput();       //å°†æ•°æ®çº¿SDAè®¾ç½®ä¸ºè¾“å‡º
+  SET_I2C_SDA();          //2#æ•°æ®çº¿SDAè¾“å‡ºé«˜ç”µå¹³
+  DelayNus(2);            //å»¶æ—¶2us
+  SET_I2C_SCL();          //3#æ—¶é’Ÿçº¿SCLè¾“å‡ºé«˜ç”µå¹³ï¼Œåœ¨SCLä¸Šå‡æ²¿å‰å°±è¦æŠŠSDAæ‹‰é«˜ï¼Œä¸ºéžåº”ç­”ä¿¡å·
+  DelayNus(2);            //å»¶æ—¶2us
+  CLR_I2C_SCL();          //4#æ—¶é’Ÿçº¿SCLè¾“å‡ºä½Žç”µå¹³ï¼Œé’³ä½I2Cæ€»çº¿
 }
