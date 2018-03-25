@@ -1,23 +1,23 @@
 /*********************************************************************************************************
-* ģ������: DataType.h
-* ժ    Ҫ: �������Ͷ���
-* ��ǰ�汾: 1.0.0
-* ��    ��: 
-* �������: 2018��03��01�� 
-* ��    ��:
-* ע    ��: none                                                                  
+* 模块名称: DataType.h
+* 摘    要: 数据类型定义
+* 当前版本: 1.0.0
+* 作    者: 666immortal
+* 完成日期: 2018年03月01日 
+* 内    容:
+* 注    意: none                                                                  
 **********************************************************************************************************
-* ȡ���汾: 
-* ��    ��: 
-* �������: 
-* �޸�����: 
-* �޸��ļ�: 
+* 取代版本: 
+* 作    者: 
+* 完成日期: 
+* 修改内容: 
+* 修改文件: 
 *********************************************************************************************************/
 #ifndef _DATA_TYPE_H_
 #define _DATA_TYPE_H_
 
 /*********************************************************************************************************
-*                                              �궨��
+*                                              宏定义
 *********************************************************************************************************/
 typedef signed char         i8;
 typedef signed short        i16;
@@ -28,20 +28,20 @@ typedef unsigned int        u32;
 
 typedef int                 BOOL;
 typedef unsigned char       BYTE;
-typedef unsigned short      HWORD;        //����Byte���һ��HalfWord
-typedef unsigned int        WORD;         //�ĸ�Byte���һ��Word
+typedef unsigned short      HWORD;        //两个Byte组成一个HalfWord
+typedef unsigned int        WORD;         //四个Byte组成一个Word
 typedef long                LONG;
 
-#define LOHWORD(w)          ((HWORD)(w))                            //�ֵĵͰ��� 
-#define HIHWORD(w)          ((HWORD)(((WORD)(w) >> 16) & 0xFFFF))   //�ֵĸ߰���
+#define LOHWORD(w)          ((HWORD)(w))                            //字的低半字 
+#define HIHWORD(w)          ((HWORD)(((WORD)(w) >> 16) & 0xFFFF))   //字的高半字
 
-#define LOBYTE(hw)          ((BYTE)(hw) )                           //���ֵĵ��ֽ�
-#define HIBYTE(hw)          ((BYTE)(((WORD)(hw) >> 8) & 0xFF))      //���ֵĸ��ֽ�
+#define LOBYTE(hw)          ((BYTE)(hw) )                           //半字的低字节
+#define HIBYTE(hw)          ((BYTE)(((WORD)(hw) >> 8) & 0xFF))      //半字的高字节
 
-//����BYTE���һ��HWORD
+//两个BYTE组成一个HWORD
 #define MAKEHWORD(bH, bL)   ((HWORD)(((BYTE)(bL)) | ((HWORD)((BYTE)(bH))) << 8) )	
 
-//����HWORD���һ��WORD
+//两个HWORD组成一个WORD
 #define MAKEWORD(hwH, hwL)  ((WORD)(((HWORD)(hwL)) | ((WORD)((HWORD)(hwH))) << 16) )
 
 #define TRUE          1
@@ -50,11 +50,11 @@ typedef long                LONG;
 #define INVALID_DATA  -100
 
 /*********************************************************************************************************
-*                                              �ṹ�嶨��
+*                                              结构体定义
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              API��������
+*                                              API函数声明
 *********************************************************************************************************/
 
 #endif
