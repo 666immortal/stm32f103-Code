@@ -1,59 +1,59 @@
 /*********************************************************************************************************
-* Ä£¿éÃû³Æ: SPI.h
-* Õª    Òª: SPIÇý¶¯
-* µ±Ç°°æ±¾: 1.0.0
-* ×÷    Õß: 
-* Íê³ÉÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ÄÚ    ÈÝ:
-* ×¢    Òâ: none                                                                  
+* æ¨¡å—åç§°: SPI.h
+* æ‘˜    è¦: SPIé©±åŠ¨
+* å½“å‰ç‰ˆæœ¬: 1.0.0
+* ä½œ    è€…: 666immortal
+* å®Œæˆæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* å†…    å®¹:
+* æ³¨    æ„: none                                                                  
 **********************************************************************************************************
-* È¡´ú°æ±¾: 
-* ×÷    Õß:
-* Íê³ÉÈÕÆÚ: 
-* ÐÞ¸ÄÄÚÈÝ:
-* ÐÞ¸ÄÎÄ¼þ: 
+* å–ä»£ç‰ˆæœ¬: 
+* ä½œ    è€…:
+* å®Œæˆæ—¥æœŸ: 
+* ä¿®æ”¹å†…å®¹:
+* ä¿®æ”¹æ–‡ä»¶: 
 *********************************************************************************************************/
 #ifndef _SPI_H_
 #define _SPI_H_
 
 /*********************************************************************************************************
-*                                              °üº¬Í·ÎÄ¼þ
+*                                              åŒ…å«å¤´æ–‡ä»¶
 *********************************************************************************************************/
 #include "DataType.h"
 
 /*********************************************************************************************************
-*                                              ºê¶¨Òå
+*                                              å®å®šä¹‰
 *********************************************************************************************************/
-#define USER_DEFINE_SPI_CS_GPIO_PORT    GPIOB                   //ÓÃ»§¶¨ÒåSPI.CSµÄGPIO¶Ë¿Ú
-#define USER_DEFINE_SPI_CS_GPIO_PIN     GPIO_Pin_12             //ÓÃ»§¶¨ÒåSPI.CSµÄÒý½Å
-#define USER_DEFINE_SPI_CS_GPIO_CLK     RCC_APB2Periph_GPIOB    //ÓÃ»§¶¨ÒåSPI.CSµÄÊ±ÖÓ
+#define USER_DEFINE_SPI_CS_GPIO_PORT    GPIOB                   //ç”¨æˆ·å®šä¹‰SPI.CSçš„GPIOç«¯å£
+#define USER_DEFINE_SPI_CS_GPIO_PIN     GPIO_Pin_12             //ç”¨æˆ·å®šä¹‰SPI.CSçš„å¼•è„š
+#define USER_DEFINE_SPI_CS_GPIO_CLK     RCC_APB2Periph_GPIOB    //ç”¨æˆ·å®šä¹‰SPI.CSçš„æ—¶é’Ÿ
 
-#define USER_DEFINE_SPI_SCK_GPIO_PORT   GPIOB                   //ÓÃ»§¶¨ÒåSPI.SCKµÄGPIO¶Ë¿Ú
-#define USER_DEFINE_SPI_SCK_GPIO_PIN    GPIO_Pin_13             //ÓÃ»§¶¨ÒåSPI.SCKµÄÒý½Å
-#define USER_DEFINE_SPI_SCK_GPIO_CLK    RCC_APB2Periph_GPIOB    //ÓÃ»§¶¨ÒåSPI.SCKµÄÊ±ÖÓ
+#define USER_DEFINE_SPI_SCK_GPIO_PORT   GPIOB                   //ç”¨æˆ·å®šä¹‰SPI.SCKçš„GPIOç«¯å£
+#define USER_DEFINE_SPI_SCK_GPIO_PIN    GPIO_Pin_13             //ç”¨æˆ·å®šä¹‰SPI.SCKçš„å¼•è„š
+#define USER_DEFINE_SPI_SCK_GPIO_CLK    RCC_APB2Periph_GPIOB    //ç”¨æˆ·å®šä¹‰SPI.SCKçš„æ—¶é’Ÿ
 
-#define USER_DEFINE_SPI_MISO_GPIO_PORT  GPIOB                   //ÓÃ»§¶¨ÒåSPI.MISOµÄGPIO¶Ë¿Ú
-#define USER_DEFINE_SPI_MISO_GPIO_PIN   GPIO_Pin_14             //ÓÃ»§¶¨ÒåSPI.MISOµÄÒý½Å
-#define USER_DEFINE_SPI_MISO_GPIO_CLK   RCC_APB2Periph_GPIOB    //ÓÃ»§¶¨ÒåSPI.MISOµÄÊ±ÖÓ
+#define USER_DEFINE_SPI_MISO_GPIO_PORT  GPIOB                   //ç”¨æˆ·å®šä¹‰SPI.MISOçš„GPIOç«¯å£
+#define USER_DEFINE_SPI_MISO_GPIO_PIN   GPIO_Pin_14             //ç”¨æˆ·å®šä¹‰SPI.MISOçš„å¼•è„š
+#define USER_DEFINE_SPI_MISO_GPIO_CLK   RCC_APB2Periph_GPIOB    //ç”¨æˆ·å®šä¹‰SPI.MISOçš„æ—¶é’Ÿ
 
-#define USER_DEFINE_SPI_MOSI_GPIO_PORT  GPIOB                   //ÓÃ»§¶¨ÒåSPI.MOSIµÄGPIO¶Ë¿Ú
-#define USER_DEFINE_SPI_MOSI_GPIO_PIN   GPIO_Pin_15             //ÓÃ»§¶¨ÒåSPI.MOSIµÄÒý½Å
-#define USER_DEFINE_SPI_MOSI_GPIO_CLK   RCC_APB2Periph_GPIOB    //ÓÃ»§¶¨ÒåSPI.MOSIµÄÊ±ÖÓ
+#define USER_DEFINE_SPI_MOSI_GPIO_PORT  GPIOB                   //ç”¨æˆ·å®šä¹‰SPI.MOSIçš„GPIOç«¯å£
+#define USER_DEFINE_SPI_MOSI_GPIO_PIN   GPIO_Pin_15             //ç”¨æˆ·å®šä¹‰SPI.MOSIçš„å¼•è„š
+#define USER_DEFINE_SPI_MOSI_GPIO_CLK   RCC_APB2Periph_GPIOB    //ç”¨æˆ·å®šä¹‰SPI.MOSIçš„æ—¶é’Ÿ
 
-#define USER_DEFINE_SPI_PORT            SPI2                    //ÓÃ»§¶¨ÒåSPIµÄ¶Ë¿Ú
-#define USER_DEFINE_SPI_CLK             RCC_APB1Periph_SPI2     //ÓÃ»§¶¨ÒåSPIµÄÊ±ÖÓ
-#define USER_DEFINE_SPI_CPOL            SPI_CPOL_High           //ÓÃ»§¶¨ÒåSPIµÄÊ±ÖÓ¼«ÐÔ
-#define USER_DEFINE_SPI_CPHA            SPI_CPHA_2Edge          //ÓÃ»§¶¨ÒåSPIµÄÊ±ÖÓÏàÎ»
+#define USER_DEFINE_SPI_PORT            SPI2                    //ç”¨æˆ·å®šä¹‰SPIçš„ç«¯å£
+#define USER_DEFINE_SPI_CLK             RCC_APB1Periph_SPI2     //ç”¨æˆ·å®šä¹‰SPIçš„æ—¶é’Ÿ
+#define USER_DEFINE_SPI_CPOL            SPI_CPOL_High           //ç”¨æˆ·å®šä¹‰SPIçš„æ—¶é’Ÿæžæ€§
+#define USER_DEFINE_SPI_CPHA            SPI_CPHA_2Edge          //ç”¨æˆ·å®šä¹‰SPIçš„æ—¶é’Ÿç›¸ä½
 
 /*********************************************************************************************************
-*                                              Ã¶¾Ù½á¹¹Ìå¶¨Òå
+*                                              æžšä¸¾ç»“æž„ä½“å®šä¹‰
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              APIº¯ÊýÉùÃ÷
+*                                              APIå‡½æ•°å£°æ˜Ž
 *********************************************************************************************************/ 				  	    													  
-void  InitSPI(void);                //³õÊ¼»¯SPI¶Ë¿Ú
-void  SPISetSpeed(u8 SpeedSet);     //ÉèÖÃSPIËÙ¶È   
-u8    SPIReadWriteByte(u8 TxData);  //SPI×ÜÏß¶ÁÐ´Ò»¸ö×Ö½Ú
+void  InitSPI(void);                //åˆå§‹åŒ–SPIç«¯å£
+void  SPISetSpeed(u8 SpeedSet);     //è®¾ç½®SPIé€Ÿåº¦   
+u8    SPIReadWriteByte(u8 TxData);  //SPIæ€»çº¿è¯»å†™ä¸€ä¸ªå­—èŠ‚
  
 #endif
