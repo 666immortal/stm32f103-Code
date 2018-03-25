@@ -1,56 +1,56 @@
 /*********************************************************************************************************
-* Ä£¿éÃû³Æ: I2C.h
-* Õª    Òª: I2CÇý¶¯
-* µ±Ç°°æ±¾: 1.0.0
-* ×÷    Õß: 
-* Íê³ÉÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ÄÚ    ÈÝ:
-* ×¢    Òâ: none                                                                  
+* æ¨¡å—åç§°: I2C.h
+* æ‘˜    è¦: I2Cé©±åŠ¨
+* å½“å‰ç‰ˆæœ¬: 1.0.0
+* ä½œ    è€…: 666immortal
+* å®Œæˆæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* å†…    å®¹:
+* æ³¨    æ„: none                                                                  
 **********************************************************************************************************
-* È¡´ú°æ±¾: 
-* ×÷    Õß:
-* Íê³ÉÈÕÆÚ: 
-* ÐÞ¸ÄÄÚÈÝ:
-* ÐÞ¸ÄÎÄ¼þ: 
+* å–ä»£ç‰ˆæœ¬: 
+* ä½œ    è€…:
+* å®Œæˆæ—¥æœŸ: 
+* ä¿®æ”¹å†…å®¹:
+* ä¿®æ”¹æ–‡ä»¶: 
 *********************************************************************************************************/
 #ifndef _I2C_H_  
 #define _I2C_H_  
 
 /*********************************************************************************************************
-*                                              °üº¬Í·ÎÄ¼þ
+*                                              åŒ…å«å¤´æ–‡ä»¶
 *********************************************************************************************************/
 #include <stm32f10x_conf.h>
 #include "DataType.h"
 
 /*********************************************************************************************************
-*                                              ºê¶¨Òå
+*                                              å®å®šä¹‰
 *********************************************************************************************************/
-#define USER_DEFINE_I2C_SCL_GPIO_PORT     GPIOB                      //ÓÃ»§¶¨ÒåI2C.SCLµÄGPIO¶Ë¿Ú
-#define USER_DEFINE_I2C_SCL_GPIO_PIN      GPIO_Pin_6                 //ÓÃ»§¶¨ÒåI2C.SCLµÄÒý½Å
-#define USER_DEFINE_I2C_SCL_GPIO_CLK      RCC_APB2Periph_GPIOB       //ÓÃ»§¶¨ÒåI2C.SCLµÄÊ±ÖÓ
+#define USER_DEFINE_I2C_SCL_GPIO_PORT     GPIOB                      //ç”¨æˆ·å®šä¹‰I2C.SCLçš„GPIOç«¯å£
+#define USER_DEFINE_I2C_SCL_GPIO_PIN      GPIO_Pin_6                 //ç”¨æˆ·å®šä¹‰I2C.SCLçš„å¼•è„š
+#define USER_DEFINE_I2C_SCL_GPIO_CLK      RCC_APB2Periph_GPIOB       //ç”¨æˆ·å®šä¹‰I2C.SCLçš„æ—¶é’Ÿ
 
-#define USER_DEFINE_I2C_SDA_GPIO_PORT     GPIOB                      //ÓÃ»§¶¨ÒåI2C.SDAµÄGPIO¶Ë¿Ú
-#define USER_DEFINE_I2C_SDA_GPIO_PIN      GPIO_Pin_7                 //ÓÃ»§¶¨ÒåI2C.SDAµÄÒý½Å
-#define USER_DEFINE_I2C_SDA_GPIO_CLK      RCC_APB2Periph_GPIOB       //ÓÃ»§¶¨ÒåI2C.SDAµÄÊ±ÖÓ
-
-/*********************************************************************************************************
-*                                              ½á¹¹Ìå¶¨Òå
-*********************************************************************************************************/
+#define USER_DEFINE_I2C_SDA_GPIO_PORT     GPIOB                      //ç”¨æˆ·å®šä¹‰I2C.SDAçš„GPIOç«¯å£
+#define USER_DEFINE_I2C_SDA_GPIO_PIN      GPIO_Pin_7                 //ç”¨æˆ·å®šä¹‰I2C.SDAçš„å¼•è„š
+#define USER_DEFINE_I2C_SDA_GPIO_CLK      RCC_APB2Periph_GPIOB       //ç”¨æˆ·å®šä¹‰I2C.SDAçš„æ—¶é’Ÿ
 
 /*********************************************************************************************************
-*                                              APIº¯ÊýÉùÃ÷
+*                                              ç»“æž„ä½“å®šä¹‰
 *********************************************************************************************************/
-void  InitI2C(void);            //³õÊ¼»¯IIC£¬Ö÷ÒªÊÇGPIOµÄ³õÊ¼»¯
+
+/*********************************************************************************************************
+*                                              APIå‡½æ•°å£°æ˜Ž
+*********************************************************************************************************/
+void  InitI2C(void);            //åˆå§‹åŒ–IICï¼Œä¸»è¦æ˜¯GPIOçš„åˆå§‹åŒ–
   
-void  GenI2CStartSig(void);     //²úÉúIICÆðÊ¼Ê±Ðò
-void  GenI2CStopSig(void);      //²úÉúIICÍ£Ö¹Ê±Ðò
+void  GenI2CStartSig(void);     //äº§ç”ŸIICèµ·å§‹æ—¶åº
+void  GenI2CStopSig(void);      //äº§ç”ŸIICåœæ­¢æ—¶åº
 
-void  I2CSendByte(u8 txd);      //IIC·¢ËÍÒ»¸ö×Ö½Ú
-u8    I2CReadByte(u8 ack);      //IIC¶ÁÈ¡Ò»¸ö×Ö½Ú
+void  I2CSendByte(u8 txd);      //IICå‘é€ä¸€ä¸ªå­—èŠ‚
+u8    I2CReadByte(u8 ack);      //IICè¯»å–ä¸€ä¸ªå­—èŠ‚
 
-u8    I2CWaitAck(void);         //IICµÈ´ýACKÐÅºÅ
+u8    I2CWaitAck(void);         //IICç­‰å¾…ACKä¿¡å·
 
-void  SendI2CAck(void);         //IIC·¢ËÍACKÐÅºÅ
-void  SendI2CNAck(void);        //IIC²»·¢ËÍACKÐÅºÅ
+void  SendI2CAck(void);         //IICå‘é€ACKä¿¡å·
+void  SendI2CNAck(void);        //IICä¸å‘é€ACKä¿¡å·
 
 #endif
