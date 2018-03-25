@@ -1,106 +1,106 @@
 /*********************************************************************************************************
-* ģ������: RCC.c
-* ժ    Ҫ: 
-* ��ǰ�汾: 1.0.0
-* ��    ��: 
-* �������: 2018��03��01��
-* ��    ��:
-* ע    ��: none                                                                  
+* 模块名称: RCC.c
+* 摘    要: 
+* 当前版本: 1.0.0
+* 作    者: 666immortal
+* 完成日期: 2018年03月01日
+* 内    容:
+* 注    意: none                                                                  
 **********************************************************************************************************
-* ȡ���汾: 
-* ��    ��:
-* �������: 
-* �޸�����:
-* �޸��ļ�: 
+* 取代版本: 
+* 作    者:
+* 完成日期: 
+* 修改内容:
+* 修改文件: 
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              ����ͷ�ļ�
+*                                              包含头文件
 *********************************************************************************************************/
 #include "RCC.h"
 #include <stm32f10x_conf.h>
 
 /*********************************************************************************************************
-*                                              �궨��
+*                                              宏定义
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              ö�ٽṹ�嶨��
+*                                              枚举结构体定义
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              �ڲ�����
+*                                              内部变量
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              �ڲ���������
+*                                              内部函数声明
 *********************************************************************************************************/
-static  void  ConfigRCC(void);    //����RCC
+static  void  ConfigRCC(void);    //配置RCC
 
 /*********************************************************************************************************
-*                                              �ڲ�����ʵ��
+*                                              内部函数实现
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-* ��������: ConfigRCC
-* ��������: ����RCC 
-* �������: void
-* �������: void
-* �� �� ֵ: void
-* ��������: 2018��03��01��
-* ע    ��: ���õ�ʱ������������
-*           ��0���ⲿ����HSE=8MHz
-*           ��1��PLLCLK��PLLʱ�ӣ�=HSE*9=72MHz
-*           ��2��SYSCLK��ϵͳʱ�ӣ�=PLLCLK=72 MHz
-*           ��3��HCLK��AHB����ʱ�ӣ�=SYSCLK=72MHz
-*           ��4��PCLK1��APB1����ʱ�ӣ�=HCLK/2=36MHz
-*           ��5��PCLK2��APB2����ʱ�ӣ�=HCLK=72MHz
-*           ��6��ADCCLK��ADCʱ�ӣ�=PCLK2/4=72/4=18MHz 
+* 函数名称: ConfigRCC
+* 函数功能: 配置RCC 
+* 输入参数: void
+* 输出参数: void
+* 返 回 值: void
+* 创建日期: 2018年03月01日
+* 注    意: 配置的时钟如下所述：
+*           （0）外部晶振HSE=8MHz
+*           （1）PLLCLK（PLL时钟）=HSE*9=72MHz
+*           （2）SYSCLK（系统时钟）=PLLCLK=72 MHz
+*           （3）HCLK（AHB总线时钟）=SYSCLK=72MHz
+*           （4）PCLK1（APB1总线时钟）=HCLK/2=36MHz
+*           （5）PCLK2（APB2总线时钟）=HCLK=72MHz
+*           （6）ADCCLK（ADC时钟）=PCLK2/4=72/4=18MHz 
 *********************************************************************************************************/
 static void ConfigRCC(void)
 {
-  ErrorStatus HSEStartUpStatus;               //����ö�ٱ���HSEStartUpStatus��������־�ⲿ���پ����״̬
+  ErrorStatus HSEStartUpStatus;               //定义枚举变量HSEStartUpStatus，用来标志外部高速晶振的状态
   
-  RCC_DeInit();                               //������RCC�Ĵ�������ΪĬ��ֵ
+  RCC_DeInit();                               //将外设RCC寄存器重设为默认值
 
-  RCC_HSEConfig(RCC_HSE_ON);                  //ʹ���ⲿ���پ���
+  RCC_HSEConfig(RCC_HSE_ON);                  //使能外部高速晶振
 
-  HSEStartUpStatus = RCC_WaitForHSEStartUp(); //�ȴ��ⲿ���پ����ȶ�
+  HSEStartUpStatus = RCC_WaitForHSEStartUp(); //等待外部高速晶振稳定
   
-  if(HSEStartUpStatus == SUCCESS)             //�ⲿ���پ���ɹ��ȶ�   
+  if(HSEStartUpStatus == SUCCESS)             //外部高速晶振成功稳定   
   {
-    FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable); //ʹ��flashԤ��ȡ������
+    FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable); //使能flash预读取缓冲区
 
-    FLASH_SetLatency(FLASH_Latency_2);        //���ô�����ʱֵ��FLASH_Latency_2��2��ʱ����
+    FLASH_SetLatency(FLASH_Latency_2);        //设置代码延时值，FLASH_Latency_2，2延时周期
   
-    RCC_HCLKConfig(RCC_SYSCLK_Div1);          //���ø���AHBʱ�ӣ�HCLK����RCC_SYSCLK_Div1��HCLK = SYSCLK 
+    RCC_HCLKConfig(RCC_SYSCLK_Div1);          //设置高速AHB时钟（HCLK），RCC_SYSCLK_Div1，HCLK = SYSCLK 
   
-    RCC_PCLK2Config(RCC_HCLK_Div1);           //���ø���APB2ʱ�ӣ�PCLK2����RCC_HCLK_Div1��PCLK2 = HCLK
+    RCC_PCLK2Config(RCC_HCLK_Div1);           //设置高速APB2时钟（PCLK2），RCC_HCLK_Div1，PCLK2 = HCLK
 
-    RCC_PCLK1Config(RCC_HCLK_Div2);           //���õ���APB1ʱ�ӣ�PCLK1����RCC_HCLK_Div2��PCLK1 = HCLK/2
+    RCC_PCLK1Config(RCC_HCLK_Div2);           //设置低速APB1时钟（PCLK1），RCC_HCLK_Div2，PCLK1 = HCLK/2
 
-    //RCC_ADCCLKConfig(RCC_PCLK2_Div4);       //����ADCʱ�ӣ�ADCCLK����RCC_PCLK2_Div4��ADCCLK = PCLK2/4 
+    //RCC_ADCCLKConfig(RCC_PCLK2_Div4);       //设置ADC时钟（ADCCLK），RCC_PCLK2_Div4，ADCCLK = PCLK2/4 
   
-    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_9);//����PLLʱ��Դ����Ƶϵ����PLLCLK = 8MHz*9 = 72MHz
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_9);//设置PLL时钟源及倍频系数，PLLCLK = 8MHz*9 = 72MHz
 
-    RCC_PLLCmd(ENABLE);                       //ʹ��PLL
+    RCC_PLLCmd(ENABLE);                       //使能PLL
 
-    while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET)  //�ȴ����໷����ȶ�
+    while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET)  //等待锁相环输出稳定
     {
       
     }
 
-    //����HSI/HSE/PLLΪϵͳʱ��
+    //设置HSI/HSE/PLL为系统时钟
     //RCC_SYSCLKSource_HSI
     //RCC_SYSCLKSource_HSE
     //RCC_SYSCLKSource_PLLCLK
-    RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);         //�����໷�������Ϊϵͳʱ��
+    RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);         //将锁相环输出设置为系统时钟
 
-    //�ȴ�HSI/HSE/PLL�ɹ�����ϵͳʱ�ӵ�ʱ��Դ
-    //0x00-HSI��Ϊϵͳʱ��
-    //0x04-HSE��Ϊϵͳʱ��
-    //0x08-PLL��Ϊϵͳʱ��
-    while(RCC_GetSYSCLKSource() != 0x08)               //�ȴ�PLL�ɹ�����ϵͳʱ�ӵ�ʱ��Դ
+    //等待HSI/HSE/PLL成功用于系统时钟的时钟源
+    //0x00-HSI作为系统时钟
+    //0x04-HSE作为系统时钟
+    //0x08-PLL作为系统时钟
+    while(RCC_GetSYSCLKSource() != 0x08)               //等待PLL成功用于系统时钟的时钟源
     {
       
     }
@@ -108,18 +108,18 @@ static void ConfigRCC(void)
 }
 
 /*********************************************************************************************************
-*                                              API����ʵ��
+*                                              API函数实现
 *********************************************************************************************************/
 /*********************************************************************************************************
-* ��������: InitRCC
-* ��������: ��ʼ�� RCC
-* �������: void
-* �������: void
-* �� �� ֵ: void
-* ��������: 2018��03��01��
-* ע    ��: 
+* 函数名称: InitRCC
+* 函数功能: 初始化 RCC
+* 输入参数: void
+* 输出参数: void
+* 返 回 值: void
+* 创建日期: 2018年03月01日
+* 注    意: 
 *********************************************************************************************************/
 void InitRCC(void)
 {
-  ConfigRCC();          //����RCC
+  ConfigRCC();          //配置RCC
 }
