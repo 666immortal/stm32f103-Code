@@ -1,117 +1,117 @@
 /*********************************************************************************************************
-* Ä£¿éÃû³Æ: LED.c
-* Õª    Òª: 
-* µ±Ç°°æ±¾: 1.0.0
-* ×÷    Õß: 
-* Íê³ÉÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ÄÚ    ÈÝ:
-* ×¢    Òâ: none                                                                  
+* æ¨¡å—åç§°: LED.c
+* æ‘˜    è¦: 
+* å½“å‰ç‰ˆæœ¬: 1.0.0
+* ä½œ    è€…: 666immortal
+* å®Œæˆæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* å†…    å®¹:
+* æ³¨    æ„: none                                                                  
 **********************************************************************************************************
-* È¡´ú°æ±¾: 
-* ×÷    Õß:
-* Íê³ÉÈÕÆÚ: 
-* ÐÞ¸ÄÄÚÈÝ:
-* ÐÞ¸ÄÎÄ¼þ: 
+* å–ä»£ç‰ˆæœ¬: 
+* ä½œ    è€…:
+* å®Œæˆæ—¥æœŸ: 
+* ä¿®æ”¹å†…å®¹:
+* ä¿®æ”¹æ–‡ä»¶: 
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              °üº¬Í·ÎÄ¼þ
+*                                              åŒ…å«å¤´æ–‡ä»¶
 *********************************************************************************************************/
 #include "LED.h"
 #include <stm32f10x_conf.h>
 
 /*********************************************************************************************************
-*                                              ºê¶¨Òå
+*                                              å®å®šä¹‰
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              Ã¶¾Ù½á¹¹Ìå¶¨Òå
+*                                              æžšä¸¾ç»“æž„ä½“å®šä¹‰
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿±äÁ¿
+*                                              å†…éƒ¨å˜é‡
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊýÉùÃ÷
+*                                              å†…éƒ¨å‡½æ•°å£°æ˜Ž
 *********************************************************************************************************/
-static  void  ConfigLEDGPIO(void);         //ÅäÖÃLEDµÄGPIO
+static  void  ConfigLEDGPIO(void);         //é…ç½®LEDçš„GPIO
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊýÊµÏÖ
+*                                              å†…éƒ¨å‡½æ•°å®žçŽ°
 *********************************************************************************************************/
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: ConfigLEDGPIO
-* º¯Êý¹¦ÄÜ: ÅäÖÃLEDµÄGPIO£¬×÷ÎªÏµÍ³ÔËÐÐÖ¸Ê¾µÆ 
-* ÊäÈë²ÎÊý: void 
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ:
+* å‡½æ•°åç§°: ConfigLEDGPIO
+* å‡½æ•°åŠŸèƒ½: é…ç½®LEDçš„GPIOï¼Œä½œä¸ºç³»ç»Ÿè¿è¡ŒæŒ‡ç¤ºç¯ 
+* è¾“å…¥å‚æ•°: void 
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„:
 *********************************************************************************************************/
 static  void  ConfigLEDGPIO(void)
 {
-  GPIO_InitTypeDef GPIO_InitStructure;           //¶¨Òå½á¹¹ÌåGPIO_InitStructure,ÓÃÀ´ÅäÖÃLEDµÄGPIO
+  GPIO_InitTypeDef GPIO_InitStructure;           //å®šä¹‰ç»“æž„ä½“GPIO_InitStructure,ç”¨æ¥é…ç½®LEDçš„GPIO
                                                                      
-  RCC_APB2PeriphClockCmd(USER_DEFINE_LED0_GPIO_CLK, ENABLE);         //Ê¹ÄÜLED0µÄÊ±ÖÓ
-  RCC_APB2PeriphClockCmd(USER_DEFINE_LED1_GPIO_CLK, ENABLE);         //Ê¹ÄÜLED1µÄÊ±ÖÓ
+  RCC_APB2PeriphClockCmd(USER_DEFINE_LED0_GPIO_CLK, ENABLE);         //ä½¿èƒ½LED0çš„æ—¶é’Ÿ
+  RCC_APB2PeriphClockCmd(USER_DEFINE_LED1_GPIO_CLK, ENABLE);         //ä½¿èƒ½LED1çš„æ—¶é’Ÿ
                                                                                                                   
-  GPIO_InitStructure.GPIO_Pin   = USER_DEFINE_LED0_GPIO_PIN;         //ÉèÖÃLED0µÄÒý½Å
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;                  //ÉèÖÃI/OËÙÂÊÎª50MHz
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;                  //ÍÆÍìÊä³öÄ£Ê½
-  GPIO_Init(USER_DEFINE_LED0_GPIO_PORT, &GPIO_InitStructure);        //¸ù¾Ý²ÎÊý³õÊ¼»¯LED0µÄGPIO¶Ë¿Ú
+  GPIO_InitStructure.GPIO_Pin   = USER_DEFINE_LED0_GPIO_PIN;         //è®¾ç½®LED0çš„å¼•è„š
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;                  //è®¾ç½®I/Oé€ŸçŽ‡ä¸º50MHz
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;                  //æŽ¨æŒ½è¾“å‡ºæ¨¡å¼
+  GPIO_Init(USER_DEFINE_LED0_GPIO_PORT, &GPIO_InitStructure);        //æ ¹æ®å‚æ•°åˆå§‹åŒ–LED0çš„GPIOç«¯å£
 
-  GPIO_WriteBit(USER_DEFINE_LED0_GPIO_PORT, USER_DEFINE_LED0_GPIO_PIN, Bit_RESET); //LED0Ä¬ÈÏÖµÎªµãÁÁ
+  GPIO_WriteBit(USER_DEFINE_LED0_GPIO_PORT, USER_DEFINE_LED0_GPIO_PIN, Bit_RESET); //LED0é»˜è®¤å€¼ä¸ºç‚¹äº®
 
-  GPIO_InitStructure.GPIO_Pin   = USER_DEFINE_LED1_GPIO_PIN;         //ÉèÖÃLED1µÄÒý½Å
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;                  //ÉèÖÃI/O¿ÚËÙÂÊÎª50MHz
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;                  //ÍÆÍìÊä³öÄ£Ê½
-  GPIO_Init(USER_DEFINE_LED1_GPIO_PORT, &GPIO_InitStructure);        //¸ù¾Ý²ÎÊý³õÊ¼»¯LED1µÄGPIO¶Ë¿Ú
+  GPIO_InitStructure.GPIO_Pin   = USER_DEFINE_LED1_GPIO_PIN;         //è®¾ç½®LED1çš„å¼•è„š
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;                  //è®¾ç½®I/Oå£é€ŸçŽ‡ä¸º50MHz
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;                  //æŽ¨æŒ½è¾“å‡ºæ¨¡å¼
+  GPIO_Init(USER_DEFINE_LED1_GPIO_PORT, &GPIO_InitStructure);        //æ ¹æ®å‚æ•°åˆå§‹åŒ–LED1çš„GPIOç«¯å£
 
-  GPIO_WriteBit(USER_DEFINE_LED1_GPIO_PORT, USER_DEFINE_LED1_GPIO_PIN, Bit_SET);   //LED1Ä¬ÈÏÖµÎªÏ¨Ãð
+  GPIO_WriteBit(USER_DEFINE_LED1_GPIO_PORT, USER_DEFINE_LED1_GPIO_PIN, Bit_SET);   //LED1é»˜è®¤å€¼ä¸ºç†„ç­
 }
 
 /*********************************************************************************************************
-*                                              APIº¯ÊýÊµÏÖ
+*                                              APIå‡½æ•°å®žçŽ°
 *********************************************************************************************************/
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: InitLED
-* º¯Êý¹¦ÄÜ: ³õÊ¼»¯LEDº¯Êý
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ:
+* å‡½æ•°åç§°: InitLED
+* å‡½æ•°åŠŸèƒ½: åˆå§‹åŒ–LEDå‡½æ•°
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„:
 *********************************************************************************************************/
 void InitLED(void)
 {
-  ConfigLEDGPIO();      //ÅäÖÃLEDµÄGPIO
+  ConfigLEDGPIO();      //é…ç½®LEDçš„GPIO
 }
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: LEDFlicker
-* º¯Êý¹¦ÄÜ: LEDÉÁË¸º¯Êý£¬Ö÷ÒªÊÇÎªÁË²âÊÔ·½±ã
-* ÊäÈë²ÎÊý: cnt
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: cnt = 500±íÊ¾Ã¿2sÉÁË¸Ò»´Î£¨ÁÁÃð¸÷1s£©
+* å‡½æ•°åç§°: LEDFlicker
+* å‡½æ•°åŠŸèƒ½: LEDé—ªçƒå‡½æ•°ï¼Œä¸»è¦æ˜¯ä¸ºäº†æµ‹è¯•æ–¹ä¾¿
+* è¾“å…¥å‚æ•°: cnt
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: cnt = 500è¡¨ç¤ºæ¯2sé—ªçƒä¸€æ¬¡ï¼ˆäº®ç­å„1sï¼‰
 *********************************************************************************************************/
 void LEDFlicker(u16 cnt)
 {
-  static u16 s_iCnt;     //¶¨Òå¾²Ì¬±äÁ¿s_iCnt×÷ÎªÑ­»·¼ÆÊýÆ÷
+  static u16 s_iCnt;     //å®šä¹‰é™æ€å˜é‡s_iCntä½œä¸ºå¾ªçŽ¯è®¡æ•°å™¨
   
-  s_iCnt++;              //¼ÆÊýÆ÷ÊýÖµ¼Ó1
+  s_iCnt++;              //è®¡æ•°å™¨æ•°å€¼åŠ 1
   
-  if(s_iCnt >= cnt)      //¼ÆÊýÆ÷ÊýÖµ´óÓÚLEDÉÁË¸¶¨Ê±²ÎÊýcnt
+  if(s_iCnt >= cnt)      //è®¡æ•°å™¨æ•°å€¼å¤§äºŽLEDé—ªçƒå®šæ—¶å‚æ•°cnt
   { 
-    s_iCnt = 0;          //¼ÆÊýÆ÷ÊýÖµÖØÖÃÎª0
+    s_iCnt = 0;          //è®¡æ•°å™¨æ•°å€¼é‡ç½®ä¸º0
 
-    //LED0×´Ì¬È¡·´£¬ÊµÏÖLED0ÉÁË¸
+    //LED0çŠ¶æ€å–åï¼Œå®žçŽ°LED0é—ªçƒ
     GPIO_WriteBit(USER_DEFINE_LED0_GPIO_PORT, USER_DEFINE_LED0_GPIO_PIN, 
     (BitAction)(1 - GPIO_ReadOutputDataBit(USER_DEFINE_LED0_GPIO_PORT, USER_DEFINE_LED0_GPIO_PIN)));
     
-    //LED1×´Ì¬È¡·´£¬ÊµÏÖLED1ÉÁË¸
+    //LED1çŠ¶æ€å–åï¼Œå®žçŽ°LED1é—ªçƒ
     GPIO_WriteBit(USER_DEFINE_LED1_GPIO_PORT, USER_DEFINE_LED1_GPIO_PIN,
     (BitAction)(1 - GPIO_ReadOutputDataBit(USER_DEFINE_LED1_GPIO_PORT, USER_DEFINE_LED1_GPIO_PIN)));
   }
