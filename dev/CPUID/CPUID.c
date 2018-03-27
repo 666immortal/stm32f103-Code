@@ -1,55 +1,55 @@
 /*********************************************************************************************************
-* ģ������: CPUID.c
-* ժ    Ҫ: 
-* ��ǰ�汾: 1.0.0
-* ��    ��: 
-* �������: 2018��03��01��
-* ��    ��:
-* ע    ��: none                                                                 
+* 模块名称: CPUID.c
+* 摘    要: 
+* 当前版本: 1.0.0
+* 作    者: 666immortal
+* 完成日期: 2018年03月01日
+* 内    容:
+* 注    意: none                                                                 
 **********************************************************************************************************
-* ȡ���汾: 
-* ��    ��:
-* �������: 
-* �޸�����:
-* �޸��ļ�: 
+* 取代版本: 
+* 作    者:
+* 完成日期: 
+* 修改内容:
+* 修改文件: 
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              ����ͷ�ļ�
+*                                              包含头文件
 *********************************************************************************************************/
 #include "CPUID.h"
 #include "UART.h"
 #include <stm32f10x_conf.h>
 
 /*********************************************************************************************************
-*                                              �궨��
+*                                              宏定义
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              �ڲ�����
+*                                              内部变量
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              �ڲ���������
+*                                              内部函数声明
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              �ڲ�����ʵ��
+*                                              内部函数实现
 *********************************************************************************************************/
 
 
 
 /*********************************************************************************************************
-*                                              API����ʵ��
+*                                              API函数实现
 *********************************************************************************************************/
 /*********************************************************************************************************
-* ��������: InitCPUID
-* ��������: ��ʼ��CPUID 
-* �������: void
-* �������: void
-* �� �� ֵ: void
-* ��������: 2018��03��01��
-* ע    ��:
+* 函数名称: InitCPUID
+* 函数功能: 初始化CPUID 
+* 输入参数: void
+* 输出参数: void
+* 返 回 值: void
+* 创建日期: 2018年03月01日
+* 注    意:
 *********************************************************************************************************/
 void  InitCPUID(void)
 {
@@ -57,24 +57,24 @@ void  InitCPUID(void)
 }
 
 /*********************************************************************************************************
-* ��������: ReadCPUID
-* ��������: ����mcuisp�ĸ�ʽȡ��CPUID 
-* �������: void
-* �������: ����mcuisp�ĸ�ʽ��ţ�arrId[11]Ϊ���λ
-* �� �� ֵ: void
-* ��������: 2018��03��01��
-* ע    ��:
+* 函数名称: ReadCPUID
+* 函数功能: 按照mcuisp的格式取出CPUID 
+* 输入参数: void
+* 输出参数: 按照mcuisp的格式存放，arrId[11]为最高位
+* 返 回 值: void
+* 创建日期: 2018年03月01日
+* 注    意:
 *********************************************************************************************************/
 void  ReadCPUID(u8* pMCUISPID)
 {
-  u32 arrID[3];                                 //32λ��CPUID
+  u32 arrID[3];                                 //32位的CPUID
      
-  //�ڹ̶���ַ��ȡSTM32Ψһ��CPUID
+  //在固定地址获取STM32唯一的CPUID
   arrID[0] = *(vu32*)(0x1FFFF7E8);              //31-00
   arrID[1] = *(vu32*)(0x1FFFF7EC);              //63-32
   arrID[2] = *(vu32*)(0x1FFFF7F0);              //95-64
   
-  //����MCUISP�ĸ�ʽ���
+  //按照MCUISP的格式存放
   pMCUISPID[11] = (arrID[0] & 0x000000FF) >> 0; 
   pMCUISPID[10] = (arrID[0] & 0x0000FF00) >> 8;
   pMCUISPID[9]  = (arrID[0] & 0x00FF0000) >> 16;
@@ -92,26 +92,26 @@ void  ReadCPUID(u8* pMCUISPID)
 }
 
 /*********************************************************************************************************
-* ��������: CheckCPUID
-* ��������: ���STM32��ID�Ƿ�ƥ�䣬���ƥ���������ִ�У��������while��ѭ�� 
-* �������: void
-* �������: void
-* �� �� ֵ: void
-* ��������: 2018��03��01��
-* ע    ��: 
+* 函数名称: CheckCPUID
+* 函数功能: 检测STM32的ID是否匹配，如果匹配继续向下执行，否则进入while死循环 
+* 输入参数: void
+* 输出参数: void
+* 返 回 值: void
+* 创建日期: 2018年03月01日
+* 注    意: 
 *********************************************************************************************************/
 void  CheckCPUID(void)
 {
-  i8  i;                              //ѭ��������
-  u8  arrMCUISPID[12];                //���ڴ��STM32��CPUID
-  u8  idOk = FALSE;                   //������־λ����ʾCPUIDƥ���Ƿ�ɹ���0-ʧ�ܣ�1-�ɹ�
+  i8  i;                              //循环计数器
+  u8  arrMCUISPID[12];                //用于存放STM32的CPUID
+  u8  idOk = FALSE;                   //用作标志位，表示CPUID匹配是否成功，0-失败，1-成功
 
-  u8  permitCPUID1[12];               //�洢DLʹ�õ�ϵͳ���CPUID
-  u8  permitCPUID2[12];               //�洢LYQʹ�õ�ϵͳ���CPUID
-  u8  permitCPUID3[12];               //�洢ս�����CPUID
+  u8  permitCPUID1[12];               //存储DL使用的系统板的CPUID
+  u8  permitCPUID2[12];               //存储LYQ使用的系统板的CPUID
+  u8  permitCPUID3[12];               //存储战舰板的CPUID
 
-  //DLʹ�õ�ϵͳ���CPUID
-  permitCPUID1[11] = 0X30;            //96λ��оƬΨһ���кŵ������һ���ֽ�
+  //DL使用的系统板的CPUID
+  permitCPUID1[11] = 0X30;            //96位的芯片唯一序列号的最左端一个字节
   permitCPUID1[10] = 0XFF;
   permitCPUID1[9]  = 0XD7;
   permitCPUID1[8]  = 0X05;
@@ -122,10 +122,10 @@ void  CheckCPUID(void)
   permitCPUID1[3]  = 0X41;
   permitCPUID1[2]  = 0X77;
   permitCPUID1[1]  = 0X25;
-  permitCPUID1[0]  = 0X43;            //96λ��оƬΨһ���кŵ����Ҷ�һ���ֽ�
+  permitCPUID1[0]  = 0X43;            //96位的芯片唯一序列号的最右端一个字节
     
-  //LYQʹ�õ�ϵͳ���CPUID
-  permitCPUID2[11] = 0X30;            //96λ��оƬΨһ���кŵ������һ���ֽ�
+  //LYQ使用的系统板的CPUID
+  permitCPUID2[11] = 0X30;            //96位的芯片唯一序列号的最左端一个字节
   permitCPUID2[10] = 0XFF;
   permitCPUID2[9]  = 0XD6;
   permitCPUID2[8]  = 0X05;
@@ -136,10 +136,10 @@ void  CheckCPUID(void)
   permitCPUID2[3]  = 0X22;
   permitCPUID2[2]  = 0X75;
   permitCPUID2[1]  = 0X23; 
-  permitCPUID2[0]  = 0X43;            //96λ��оƬΨһ���кŵ����Ҷ�һ���ֽ�
+  permitCPUID2[0]  = 0X43;            //96位的芯片唯一序列号的最右端一个字节
 
-  //ս�����CPUID
-  permitCPUID3[11] = 0X32;            //96λ��оƬΨһ���кŵ������һ���ֽ�
+  //战舰板的CPUID
+  permitCPUID3[11] = 0X32;            //96位的芯片唯一序列号的最左端一个字节
   permitCPUID3[10] = 0XFF;
   permitCPUID3[9]  = 0XD7;
   permitCPUID3[8]  = 0X05;
@@ -150,74 +150,74 @@ void  CheckCPUID(void)
   permitCPUID3[3]  = 0X18;
   permitCPUID3[2]  = 0X71;
   permitCPUID3[1]  = 0X10;
-  permitCPUID3[0]  = 0X51;            //96λ��оƬΨһ���кŵ����Ҷ�һ���ֽ�
+  permitCPUID3[0]  = 0X51;            //96位的芯片唯一序列号的最右端一个字节
 
-  ReadCPUID(arrMCUISPID);             //��ȡ��ǰCPU��ID�����arrMCUISPID������
+  ReadCPUID(arrMCUISPID);             //读取当前CPU的ID存放在arrMCUISPID数组中
   
-  printf("The CPUID is:");            //��ӡ��ʾ��Ϣ��The CPUID is:��
+  printf("The CPUID is:");            //打印提示信息“The CPUID is:”
   
-  for(i = 11; i >= 0; i--)            //ѭ����CPUID��ӡ���
+  for(i = 11; i >= 0; i--)            //循环将CPUID打印输出
   {
-    printf("%02x", arrMCUISPID[i]);   //��CPUIDͨ��ʮ�����Ƶĸ�ʽ��ӡ���
+    printf("%02x", arrMCUISPID[i]);   //将CPUID通过十六进制的格式打印输出
   }
   
-  printf("\r\n");                     //�������
+  printf("\r\n");                     //输出换行
   
-  //����1���������е�CPUID
+  //检查第1组允许运行的CPUID
   for(i = 0; i < 12; i++)
   {
-    if (permitCPUID1[i] == arrMCUISPID[i])      //DL��ϵͳ��CPUID���ȡ����CPUID�Ƚ�
+    if (permitCPUID1[i] == arrMCUISPID[i])      //DL的系统板CPUID与读取到的CPUID比较
     {
       if(11 == i)                               
       {
-        idOk = TRUE;                            //CPUIDƥ��ɹ�
-        printf("DL ID!\r\n");                   //�����DL ID��
+        idOk = TRUE;                            //CPUID匹配成功
+        printf("DL ID!\r\n");                   //输出“DL ID”
       }    
     }
     else
     {
-      break;                                    //CPUID��ƥ�䣬����ѭ��
+      break;                                    //CPUID不匹配，跳出循环
     }
   }
 
-  //����2���������е�CPUID
+  //检查第2组允许运行的CPUID
   for(i = 0; i < 12; i++)
   {
-    if (permitCPUID2[i] == arrMCUISPID[i])      //LYQ��ϵͳ��CPUID���ȡ����CPUID�Ƚ�
+    if (permitCPUID2[i] == arrMCUISPID[i])      //LYQ的系统板CPUID与读取到的CPUID比较
     {
       if(11 == i)
       {
-        idOk = TRUE;                            //CPUIDƥ��ɹ�
-        printf("LYQ ID!\r\n");                  //�����LYQ ID��
+        idOk = TRUE;                            //CPUID匹配成功
+        printf("LYQ ID!\r\n");                  //输出“LYQ ID”
       }    
     }
     else
     {
-      break;                                    //CPUID��ƥ�䣬����ѭ��
+      break;                                    //CPUID不匹配，跳出循环
     }
   }
 
-  //����3���������е�CPUID
+  //检查第3组允许运行的CPUID
   for(i = 0; i < 12; i++)
   {
-    if (permitCPUID3[i] == arrMCUISPID[i])      //ս�����CPUID���ȡ����CPUID�Ƚ�
+    if (permitCPUID3[i] == arrMCUISPID[i])      //战舰板的CPUID与读取到的CPUID比较
     {
       if(11 == i)
       {
-        idOk = TRUE;                            //CPUIDƥ��ɹ�
-        printf("This is STM32 ID!\r\n");        //�����This is STM32 ID��
+        idOk = TRUE;                            //CPUID匹配成功
+        printf("This is STM32 ID!\r\n");        //输出“This is STM32 ID”
       }    
     }
     else
     {
-      break;                                    //CPUID��ƥ�䣬����ѭ��
+      break;                                    //CPUID不匹配，跳出循环
     }
   }
 
-  //CPUID��ƥ�䣬�������ѭ��
+  //CPUID不匹配，则进入死循环
   if(TRUE != idOk) 
   {
-    printf("CheckCPUID failed!\r\n");           //�����CheckCPUID failed!��
-    while(1);                                   //������ѭ��
+    printf("CheckCPUID failed!\r\n");           //输出“CheckCPUID failed!”
+    while(1);                                   //进入死循环
   }
 }
