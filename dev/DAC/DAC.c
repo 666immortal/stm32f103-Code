@@ -1,111 +1,111 @@
 /*********************************************************************************************************
-* Ä£¿éÃû³Æ: DAC.c
-* Õª    Òª: 
-* µ±Ç°°æ±¾: 1.0.0
-* ×÷    Õß: 
-* Íê³ÉÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ÄÚ    Èİ:
-* ×¢    Òâ: none                                                                  
+* æ¨¡å—åç§°: DAC.c
+* æ‘˜    è¦: 
+* å½“å‰ç‰ˆæœ¬: 1.0.0
+* ä½œ    è€…: 666immortal
+* å®Œæˆæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* å†…    å®¹:
+* æ³¨    æ„: none                                                                  
 **********************************************************************************************************
-* È¡´ú°æ±¾: 
-* ×÷    Õß:
-* Íê³ÉÈÕÆÚ: 
-* ĞŞ¸ÄÄÚÈİ:
-* ĞŞ¸ÄÎÄ¼ş: 
+* å–ä»£ç‰ˆæœ¬: 
+* ä½œ    è€…:
+* å®Œæˆæ—¥æœŸ: 
+* ä¿®æ”¹å†…å®¹:
+* ä¿®æ”¹æ–‡ä»¶: 
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              °üº¬Í·ÎÄ¼ş
+*                                              åŒ…å«å¤´æ–‡ä»¶
 *********************************************************************************************************/
 #include "DAC.h"
 
 /*********************************************************************************************************
-*                                              ºê¶¨Òå
+*                                              å®å®šä¹‰
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              Ã¶¾Ù½á¹¹Ìå¶¨Òå
-*********************************************************************************************************/
-
-
-/*********************************************************************************************************
-*                                              ÄÚ²¿±äÁ¿
+*                                              æšä¸¾ç»“æ„ä½“å®šä¹‰
 *********************************************************************************************************/
 
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊıÉùÃ÷
+*                                              å†…éƒ¨å˜é‡
 *********************************************************************************************************/
 
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊıÊµÏÖ
+*                                              å†…éƒ¨å‡½æ•°å£°æ˜
+*********************************************************************************************************/
+
+
+/*********************************************************************************************************
+*                                              å†…éƒ¨å‡½æ•°å®ç°
 *********************************************************************************************************/
 /*********************************************************************************************************
-* º¯ÊıÃû³Æ: InitDAC
-* º¯Êı¹¦ÄÜ: ³õÊ¼»¯DACÍ¨µÀ1Êä³ö
-* ÊäÈë²ÎÊı: void
-* Êä³ö²ÎÊı: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: InitDAC
+* å‡½æ•°åŠŸèƒ½: åˆå§‹åŒ–DACé€šé“1è¾“å‡º
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å› å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 void InitDAC(void)
 { 
-  DAC_InitTypeDef  DAC_InitStructure;     //¶¨Òå½á¹¹ÌåDAC_InitStructure£¬ÓÃÀ´ÅäÖÃDAC  
-	GPIO_InitTypeDef GPIO_InitStructure;    //¶¨Òå½á¹¹ÌåGPIO_InitStructure£¬ÓÃÀ´ÅäÖÃDACÍ¨µÀµÄGPIO
+  DAC_InitTypeDef  DAC_InitStructure;     //å®šä¹‰ç»“æ„ä½“DAC_InitStructureï¼Œç”¨æ¥é…ç½®DAC  
+	GPIO_InitTypeDef GPIO_InitStructure;    //å®šä¹‰ç»“æ„ä½“GPIO_InitStructureï¼Œç”¨æ¥é…ç½®DACé€šé“çš„GPIO
 	
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE );	        //Ê¹ÄÜDACµÄÊ±ÖÓ
-	RCC_APB2PeriphClockCmd(USER_DEFINE_DAC_GPIO_CLK, ENABLE );    //Ê¹ÄÜDACÍ¨µÀµÄGPIO¶Ë¿ÚÊ±ÖÓ
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE );	        //ä½¿èƒ½DACçš„æ—¶é’Ÿ
+	RCC_APB2PeriphClockCmd(USER_DEFINE_DAC_GPIO_CLK, ENABLE );    //ä½¿èƒ½DACé€šé“çš„GPIOç«¯å£æ—¶é’Ÿ
    
-	GPIO_InitStructure.GPIO_Pin = USER_DEFINE_DAC_GPIO_PIN;				//ÉèÖÃGPIOµÄÒı½Å
- 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN; 		            //Ä£ÄâÊäÈëÄ£Ê½
- 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;             //ÉèÖÃI/O¿ÚËÙÂÊ50MHz
- 	GPIO_Init(USER_DEFINE_DAC_GPIO, &GPIO_InitStructure);         //¸ù¾İ²ÎÊı³õÊ¼»¯GPIO
+	GPIO_InitStructure.GPIO_Pin = USER_DEFINE_DAC_GPIO_PIN;				//è®¾ç½®GPIOçš„å¼•è„š
+ 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN; 		            //æ¨¡æ‹Ÿè¾“å…¥æ¨¡å¼
+ 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;             //è®¾ç½®I/Oå£é€Ÿç‡50MHz
+ 	GPIO_Init(USER_DEFINE_DAC_GPIO, &GPIO_InitStructure);         //æ ¹æ®å‚æ•°åˆå§‹åŒ–GPIO
   
-	GPIO_SetBits(USER_DEFINE_DAC_GPIO, USER_DEFINE_DAC_GPIO_PIN); //ÉèÖÃÖ¸¶¨µÄÊı¾İ¶Ë¿ÚÎ»
+	GPIO_SetBits(USER_DEFINE_DAC_GPIO, USER_DEFINE_DAC_GPIO_PIN); //è®¾ç½®æŒ‡å®šçš„æ•°æ®ç«¯å£ä½
 					
-	DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;	                        //ÉèÖÃ²»Ê¹ÓÃ´¥·¢¹¦ÄÜ
-	DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;           //ÉèÖÃ²»Ê¹ÓÃ²¨ĞÎ·¢Éú
-	DAC_InitStructure.DAC_LFSRUnmask_TriangleAmplitude = DAC_LFSRUnmask_Bit0; //ÆÁ±Î¡¢·ùÖµÉèÖÃ
-	DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Disable ;	          //DACÊä³ö»º´æ¹Ø±Õ BOFF1=1
-  DAC_Init(USER_DEFINE_DAC_CHANNEL, &DAC_InitStructure);	                  //³õÊ¼»¯DACÍ¨µÀ
+	DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;	                        //è®¾ç½®ä¸ä½¿ç”¨è§¦å‘åŠŸèƒ½
+	DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;           //è®¾ç½®ä¸ä½¿ç”¨æ³¢å½¢å‘ç”Ÿ
+	DAC_InitStructure.DAC_LFSRUnmask_TriangleAmplitude = DAC_LFSRUnmask_Bit0; //å±è”½ã€å¹…å€¼è®¾ç½®
+	DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Disable ;	          //DACè¾“å‡ºç¼“å­˜å…³é—­ BOFF1=1
+  DAC_Init(USER_DEFINE_DAC_CHANNEL, &DAC_InitStructure);	                  //åˆå§‹åŒ–DACé€šé“
 
-	DAC_Cmd(USER_DEFINE_DAC_CHANNEL, ENABLE);            //Ê¹ÄÜDAC
+	DAC_Cmd(USER_DEFINE_DAC_CHANNEL, ENABLE);            //ä½¿èƒ½DAC
   
-  if(USER_DEFINE_DAC_CHANNEL == DAC_Channel_1)         //ÉèÖÃÍ¨µÀ1
+  if(USER_DEFINE_DAC_CHANNEL == DAC_Channel_1)         //è®¾ç½®é€šé“1
   {
-    DAC_SetChannel1Data(DAC_Align_12b_R, 0);           //ÉèÖÃDACÍ¨µÀ1µÄÖµ£¬ÇÒ²ÉÓÃ12Î»ÓÒ¶ÔÆëÊı¾İ¸ñÊ½
+    DAC_SetChannel1Data(DAC_Align_12b_R, 0);           //è®¾ç½®DACé€šé“1çš„å€¼ï¼Œä¸”é‡‡ç”¨12ä½å³å¯¹é½æ•°æ®æ ¼å¼
   }
-  else if(USER_DEFINE_DAC_CHANNEL == DAC_Channel_2)    //ÉèÖÃÍ¨µÀ2
+  else if(USER_DEFINE_DAC_CHANNEL == DAC_Channel_2)    //è®¾ç½®é€šé“2
   {
-    DAC_SetChannel2Data(DAC_Align_12b_R, 0);           //ÉèÖÃDACÍ¨µÀ2µÄÖµ£¬ÇÒ²ÉÓÃ12Î»ÓÒ¶ÔÆëÊı¾İ¸ñÊ½
+    DAC_SetChannel2Data(DAC_Align_12b_R, 0);           //è®¾ç½®DACé€šé“2çš„å€¼ï¼Œä¸”é‡‡ç”¨12ä½å³å¯¹é½æ•°æ®æ ¼å¼
   }   
 }
 
 /*********************************************************************************************************
-* º¯ÊıÃû³Æ: SetDACVol
-* º¯Êı¹¦ÄÜ: ÉèÖÃDACÍ¨µÀÊä³öµçÑ¹
-* ÊäÈë²ÎÊı: volnum:0-3300,´ú±í0-3.3V
-* Êä³ö²ÎÊı: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: SetDACVol
+* å‡½æ•°åŠŸèƒ½: è®¾ç½®DACé€šé“è¾“å‡ºç”µå‹
+* è¾“å…¥å‚æ•°: volnum:0-3300,ä»£è¡¨0-3.3V
+* è¾“å‡ºå‚æ•°: void
+* è¿” å› å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 void SetDACVol(u16 volnum)
 {
-	float temp = volnum;                               //½«ÊäÈë²ÎÊı¸³Öµ¸øtemp
+	float temp = volnum;                               //å°†è¾“å…¥å‚æ•°èµ‹å€¼ç»™temp
   
-	temp /= 1000;                                      //tempÖµÎªÉèÖÃµÄµçÑ¹Öµ
+	temp /= 1000;                                      //tempå€¼ä¸ºè®¾ç½®çš„ç”µå‹å€¼
   
-	temp = temp * 4096 / 3.3;                          //Í¨¹ı¹«Ê½¼ÆËãDOR¼Ä´æÆ÷µÄÖµ
+	temp = temp * 4096 / 3.3;                          //é€šè¿‡å…¬å¼è®¡ç®—DORå¯„å­˜å™¨çš„å€¼
   
-  if(USER_DEFINE_DAC_CHANNEL == DAC_Channel_1)       //ÉèÖÃÍ¨µÀ1
+  if(USER_DEFINE_DAC_CHANNEL == DAC_Channel_1)       //è®¾ç½®é€šé“1
   {
-    DAC_SetChannel1Data(DAC_Align_12b_R, temp);      //ÉèÖÃDACÍ¨µÀ1µÄÖµ£¬ÇÒ²ÉÓÃ12Î»ÓÒ¶ÔÆëÊı¾İ¸ñÊ½
+    DAC_SetChannel1Data(DAC_Align_12b_R, temp);      //è®¾ç½®DACé€šé“1çš„å€¼ï¼Œä¸”é‡‡ç”¨12ä½å³å¯¹é½æ•°æ®æ ¼å¼
   }
-  else if(USER_DEFINE_DAC_CHANNEL == DAC_Channel_2)  //ÉèÖÃÍ¨µÀ2
+  else if(USER_DEFINE_DAC_CHANNEL == DAC_Channel_2)  //è®¾ç½®é€šé“2
   {
-    DAC_SetChannel2Data(DAC_Align_12b_R, temp);      //ÉèÖÃDACÍ¨µÀ2µÄÖµ£¬ÇÒ²ÉÓÃ12Î»ÓÒ¶ÔÆëÊı¾İ¸ñÊ½
+    DAC_SetChannel2Data(DAC_Align_12b_R, temp);      //è®¾ç½®DACé€šé“2çš„å€¼ï¼Œä¸”é‡‡ç”¨12ä½å³å¯¹é½æ•°æ®æ ¼å¼
   }
 }
