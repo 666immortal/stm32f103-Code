@@ -1,58 +1,58 @@
 /*********************************************************************************************************
-* ģ������: EXTI.h
-* ժ    Ҫ: �ⲿ�ж�EXTI����
-* ��ǰ�汾: 1.0.0
-* ��    ��: 
-* �������: 2018��03��01��
-* ��    ��:
-* ע    ��: none                                                                  
+* 模块名称: EXTI.h
+* 摘    要: 外部中断EXTI驱动
+* 当前版本: 1.0.0
+* 作    者: 666immortal
+* 完成日期: 2018年03月01日
+* 内    容:
+* 注    意: none                                                                  
 **********************************************************************************************************
-* ȡ���汾: 
-* ��    ��:
-* �������: 
-* �޸�����:
-* �޸��ļ�: 
+* 取代版本: 
+* 作    者:
+* 完成日期: 
+* 修改内容:
+* 修改文件: 
 *********************************************************************************************************/
 #ifndef _EXTI_H_
 #define _EXTI_H_
 
 /*********************************************************************************************************
-*                                              ����ͷ�ļ�
+*                                              包含头文件
 *********************************************************************************************************/
 #include "DataType.h"
 
 /*********************************************************************************************************
-*                                              �궨��
+*                                              宏定义
 *********************************************************************************************************/
-#define USER_DEFINE_KEY0_EXIT_LINE        EXTI_Line4            //�û����尴��KEY0�ⲿ�ж���
+#define USER_DEFINE_KEY0_EXIT_LINE        EXTI_Line4            //用户定义按键KEY0外部中断线
 
-#define USER_DEFINE_KEY0_EXIT_PORTSOURCE  GPIO_PortSourceGPIOE  //�û����尴��KEY0�ⲿ�жϵ��¼����GPIO�˿�
-#define USER_DEFINE_KEY0_EXIT_PINSOURCE   GPIO_PinSource4       //�û����尴��KEY0�ⲿ�жϵ��¼��������
+#define USER_DEFINE_KEY0_EXIT_PORTSOURCE  GPIO_PortSourceGPIOE  //用户定义按键KEY0外部中断的事件输出GPIO端口
+#define USER_DEFINE_KEY0_EXIT_PINSOURCE   GPIO_PinSource4       //用户定义按键KEY0外部中断的事件输出引脚
                                                                 
-#define USER_DEFINE_KEY0_EXIT_IRQ         EXTI4_IRQn            //�û����尴��KEY0�ⲿ�жϵ��ж�ͨ��
-#define USER_DEFINE_KEY0_EXIT_IRQHandler  EXTI4_IRQHandler      //�û����尴��KEY0�ⲿ�жϵ��жϷ�����
+#define USER_DEFINE_KEY0_EXIT_IRQ         EXTI4_IRQn            //用户定义按键KEY0外部中断的中断通道
+#define USER_DEFINE_KEY0_EXIT_IRQHandler  EXTI4_IRQHandler      //用户定义按键KEY0外部中断的中断服务函数
                                                                                                                              
-#define USER_DEFINE_KEY2_EXIT_LINE        EXTI_Line2            //�û����尴��KEY2�ⲿ�ж���
+#define USER_DEFINE_KEY2_EXIT_LINE        EXTI_Line2            //用户定义按键KEY2外部中断线
 
-#define USER_DEFINE_KEY2_EXIT_PORTSOURCE  GPIO_PortSourceGPIOE  //�û����尴��KEY2�ⲿ�жϵ��¼����GPIO�˿�
-#define USER_DEFINE_KEY2_EXIT_PINSOURCE   GPIO_PinSource2       //�û����尴��KEY2�ⲿ�жϵ��¼��������
+#define USER_DEFINE_KEY2_EXIT_PORTSOURCE  GPIO_PortSourceGPIOE  //用户定义按键KEY2外部中断的事件输出GPIO端口
+#define USER_DEFINE_KEY2_EXIT_PINSOURCE   GPIO_PinSource2       //用户定义按键KEY2外部中断的事件输出引脚
                                                                 
-#define USER_DEFINE_KEY2_EXIT_IRQ         EXTI2_IRQn            //�û����尴��KEY2�ⲿ�жϵ��ж�ͨ��
-#define USER_DEFINE_KEY2_EXIT_IRQHandler  EXTI2_IRQHandler      //�û����尴��KEY2�ⲿ�жϵ��жϷ�����
+#define USER_DEFINE_KEY2_EXIT_IRQ         EXTI2_IRQn            //用户定义按键KEY2外部中断的中断通道
+#define USER_DEFINE_KEY2_EXIT_IRQHandler  EXTI2_IRQHandler      //用户定义按键KEY2外部中断的中断服务函数
 
 /*********************************************************************************************************
-*                                              �ṹ�嶨��
+*                                              结构体定义
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              API��������
+*                                              API函数声明
 *********************************************************************************************************/
-void	InitEXTI(void);		//��ʼ���ⲿ�ж�EXTI
+void	InitEXTI(void);		//初始化外部中断EXTI
 
-u8    GetKey0ExitFlag(void);  //��ȡ����KEY0�ⲿ�жϱ�־ 
-void  ClrKey0ExitFlag(void);  //�������KEY0�ⲿ�жϱ�־
+u8    GetKey0ExitFlag(void);  //获取按键KEY0外部中断标志 
+void  ClrKey0ExitFlag(void);  //清除按键KEY0外部中断标志
 
-u8    GetKey2ExitFlag(void);  //��ȡ����KEY2�ⲿ�жϱ�־ 
-void  ClrKey2ExitFlag(void);  //�������KEY2�ⲿ�жϱ�־
+u8    GetKey2ExitFlag(void);  //获取按键KEY2外部中断标志 
+void  ClrKey2ExitFlag(void);  //清除按键KEY2外部中断标志
 
 #endif
