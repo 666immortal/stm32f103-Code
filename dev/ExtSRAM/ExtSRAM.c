@@ -1,288 +1,288 @@
 /*********************************************************************************************************
-* Ä£¿éÃû³Æ: ExtSRAM.c
-* Õª    Òª: 
-* µ±Ç°°æ±¾: 1.0.0
-* ×÷    Õß: 
-* Íê³ÉÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ÄÚ    Èİ:
-* ×¢    Òâ: Ê¹ÓÃNOR/SRAMµÄ Bank1.sector3,µØÖ·Î»HADDR[27,26]=10 
-*           ¶ÔIS61LV25616/IS62WV25616,µØÖ·Ïß·¶Î§ÎªA0~A17,¶ÔIS61LV51216/IS62WV51216,µØÖ·Ïß·¶Î§ÎªA0~A18                                                                             
+* æ¨¡å—åç§°: ExtSRAM.c
+* æ‘˜    è¦: 
+* å½“å‰ç‰ˆæœ¬: 1.0.0
+* ä½œ    è€…: 666immortal
+* å®Œæˆæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* å†…    å®¹:
+* æ³¨    æ„: ä½¿ç”¨NOR/SRAMçš„ Bank1.sector3,åœ°å€ä½HADDR[27,26]=10 
+*           å¯¹IS61LV25616/IS62WV25616,åœ°å€çº¿èŒƒå›´ä¸ºA0~A17,å¯¹IS61LV51216/IS62WV51216,åœ°å€çº¿èŒƒå›´ä¸ºA0~A18                                                                             
 **********************************************************************************************************
-* È¡´ú°æ±¾: 
-* ×÷    Õß:
-* Íê³ÉÈÕÆÚ: 
-* ĞŞ¸ÄÄÚÈİ:
-* ĞŞ¸ÄÎÄ¼ş: 
+* å–ä»£ç‰ˆæœ¬: 
+* ä½œ    è€…:
+* å®Œæˆæ—¥æœŸ: 
+* ä¿®æ”¹å†…å®¹:
+* ä¿®æ”¹æ–‡ä»¶: 
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              °üº¬Í·ÎÄ¼ş
+*                                              åŒ…å«å¤´æ–‡ä»¶
 *********************************************************************************************************/
 #include "ExtSRAM.h"
 #include <stm32f10x_conf.h>
 #include "LCD.h"
 
 /*********************************************************************************************************
-*                                              ºê¶¨Òå
+*                                              å®å®šä¹‰
 *********************************************************************************************************/
-//Ê¹ÓÃµÄFSMCµÄ´æ´¢¿éBANK1µÄÇøÓò3À´¿ØÖÆIS62WV51216£¬ÆäÖĞÇøÓò3¶ÔÓ¦µÄ¿ªÊ¼µØÖ·ÊÇ0x68000000
+//ä½¿ç”¨çš„FSMCçš„å­˜å‚¨å—BANK1çš„åŒºåŸŸ3æ¥æ§åˆ¶IS62WV51216ï¼Œå…¶ä¸­åŒºåŸŸ3å¯¹åº”çš„å¼€å§‹åœ°å€æ˜¯0x68000000
 #define BANK1_SRAM3_ADDR    ((u32)(0x68000000))    
 
 /*********************************************************************************************************
-*                                              Ã¶¾Ù½á¹¹Ìå¶¨Òå
+*                                              æšä¸¾ç»“æ„ä½“å®šä¹‰
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿±äÁ¿
+*                                              å†…éƒ¨å˜é‡
 *********************************************************************************************************/
-//__attribute__£ºÓÃÀ´Ö¸¶¨±äÁ¿µÄÌØÊâÊôĞÔ£»at(0X68000000)£ºÊôĞÔËµÃ÷£»at£ºÉèÖÃ±äÁ¿µÄ¾ø¶ÔµØÖ·
-//¼´ÉèÖÃ±äÁ¿´¦ÓÚ0X68000000Õâ¸öµØÖ·£¬s_arrSRAM[250000]ÊÇ²âÊÔÓÃµÄÊı×é
+//__attribute__ï¼šç”¨æ¥æŒ‡å®šå˜é‡çš„ç‰¹æ®Šå±æ€§ï¼›at(0X68000000)ï¼šå±æ€§è¯´æ˜ï¼›atï¼šè®¾ç½®å˜é‡çš„ç»å¯¹åœ°å€
+//å³è®¾ç½®å˜é‡å¤„äº0X68000000è¿™ä¸ªåœ°å€ï¼Œs_arrSRAM[250000]æ˜¯æµ‹è¯•ç”¨çš„æ•°ç»„
 static u32 s_arrSRAM[250000] __attribute__((at(0X68000000)));
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊıÉùÃ÷
+*                                              å†…éƒ¨å‡½æ•°å£°æ˜
 *********************************************************************************************************/
-//´ÓÍâ²¿SRAMÖ¸¶¨µØÖ·¿ªÊ¼£¬Ğ´ÈëÖ¸¶¨³¤¶ÈµÄÊı¾İ
+//ä»å¤–éƒ¨SRAMæŒ‡å®šåœ°å€å¼€å§‹ï¼Œå†™å…¥æŒ‡å®šé•¿åº¦çš„æ•°æ®
 static void ExtSRAMWriteBuf(u8* pBuf, u32 writeAddr, u32 numByteToWrite);
-//´ÓÍâ²¿SRAMÖ¸¶¨µØÖ·¿ªÊ¼£¬¶ÁÈ¡Ö¸¶¨³¤¶ÈµÄÊı¾İ
+//ä»å¤–éƒ¨SRAMæŒ‡å®šåœ°å€å¼€å§‹ï¼Œè¯»å–æŒ‡å®šé•¿åº¦çš„æ•°æ®
 static void ExtSRAMReadBuf(u8* pBuf, u32 readAddr, u32 numByteToRead);   
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊıÊµÏÖ
+*                                              å†…éƒ¨å‡½æ•°å®ç°
 *********************************************************************************************************/                              
 /*********************************************************************************************************
-* º¯ÊıÃû³Æ: ExtSRAMWriteBuf
-* º¯Êı¹¦ÄÜ: ´ÓÖ¸¶¨µØÖ·¿ªÊ¼,Á¬ĞøĞ´Èën¸ö×Ö½Ú
-* ÊäÈë²ÎÊı: pBuf: ×Ö½ÚÖ¸Õë£¬writeAddr: ÒªĞ´Èë×Ö½ÚµÄÆğÊ¼µØÖ·£¬numByteToWrite: ÒªĞ´ÈëµÄ×Ö½ÚÊı
-* Êä³ö²ÎÊı: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ:
+* å‡½æ•°åç§°: ExtSRAMWriteBuf
+* å‡½æ•°åŠŸèƒ½: ä»æŒ‡å®šåœ°å€å¼€å§‹,è¿ç»­å†™å…¥nä¸ªå­—èŠ‚
+* è¾“å…¥å‚æ•°: pBuf: å­—èŠ‚æŒ‡é’ˆï¼ŒwriteAddr: è¦å†™å…¥å­—èŠ‚çš„èµ·å§‹åœ°å€ï¼ŒnumByteToWrite: è¦å†™å…¥çš„å­—èŠ‚æ•°
+* è¾“å‡ºå‚æ•°: void
+* è¿” å› å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„:
 *********************************************************************************************************/
 static void ExtSRAMWriteBuf(u8* pBuf, u32 writeAddr, u32 numByteToWrite)
 {
-  u32 n = numByteToWrite;                           //n£ºÒªĞ´ÈëµÄ×Ö½ÚÊı
+  u32 n = numByteToWrite;                           //nï¼šè¦å†™å…¥çš„å­—èŠ‚æ•°
   
-  for(; n != 0; n--)                                //Ã¿Ğ´ÈëÒ»¸ö×Ö½Ú£¬n¼õ1
+  for(; n != 0; n--)                                //æ¯å†™å…¥ä¸€ä¸ªå­—èŠ‚ï¼Œnå‡1
   {                        
-    *(vu8*)(BANK1_SRAM3_ADDR + writeAddr) = *pBuf;  //´ÓÒªĞ´Èë×Ö½ÚµÄÆğÊ¼µØÖ·¿ªÊ¼£¬Öğ¸öĞ´ÈëÊı¾İ
+    *(vu8*)(BANK1_SRAM3_ADDR + writeAddr) = *pBuf;  //ä»è¦å†™å…¥å­—èŠ‚çš„èµ·å§‹åœ°å€å¼€å§‹ï¼Œé€ä¸ªå†™å…¥æ•°æ®
     
-    writeAddr++;                                    //ÒªĞ´Èë×Ö½ÚµÄµØÖ·¼Ó1
-    pBuf++;                                         //×Ö½ÚÖ¸Õë¼Ó1
+    writeAddr++;                                    //è¦å†™å…¥å­—èŠ‚çš„åœ°å€åŠ 1
+    pBuf++;                                         //å­—èŠ‚æŒ‡é’ˆåŠ 1
   }   
 }                                          
 
 /*********************************************************************************************************
-* º¯ÊıÃû³Æ: ExtSRAMReadBuf
-* º¯Êı¹¦ÄÜ: ´ÓÖ¸¶¨µØÖ·¿ªÊ¼,Á¬Ğø¶Á³ön¸ö×Ö½Ú
-* ÊäÈë²ÎÊı: pBuf:×Ö½ÚÖ¸Õë, readAddr:Òª¶Á³ö×Ö½ÚµÄÆğÊ¼µØÖ·,numByteToRead:Òª¶Á³öµÄ×Ö½ÚÊı
-* Êä³ö²ÎÊı: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ:
+* å‡½æ•°åç§°: ExtSRAMReadBuf
+* å‡½æ•°åŠŸèƒ½: ä»æŒ‡å®šåœ°å€å¼€å§‹,è¿ç»­è¯»å‡ºnä¸ªå­—èŠ‚
+* è¾“å…¥å‚æ•°: pBuf:å­—èŠ‚æŒ‡é’ˆ, readAddr:è¦è¯»å‡ºå­—èŠ‚çš„èµ·å§‹åœ°å€,numByteToRead:è¦è¯»å‡ºçš„å­—èŠ‚æ•°
+* è¾“å‡ºå‚æ•°: void
+* è¿” å› å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„:
 *********************************************************************************************************/
 static void ExtSRAMReadBuf(u8* pBuf, u32 readAddr, u32 numByteToRead)
 {
-  u32 n = numByteToRead;                            //n£ºÒª¶Á³öµÄ×Ö½ÚÊı
+  u32 n = numByteToRead;                            //nï¼šè¦è¯»å‡ºçš„å­—èŠ‚æ•°
 
-  for(;n != 0; n--)                                 //Ã¿¶Á³öÒ»¸ö×Ö½Ú£¬n¼õ1
+  for(;n != 0; n--)                                 //æ¯è¯»å‡ºä¸€ä¸ªå­—èŠ‚ï¼Œnå‡1
   {                          
-    *pBuf = *(vu8*)(BANK1_SRAM3_ADDR + readAddr);   //´ÓÒª¶Á³ö×Ö½ÚµÄÆğÊ¼µØÖ·¿ªÊ¼£¬Öğ¸ö¶Á³öÊı¾İ
+    *pBuf = *(vu8*)(BANK1_SRAM3_ADDR + readAddr);   //ä»è¦è¯»å‡ºå­—èŠ‚çš„èµ·å§‹åœ°å€å¼€å§‹ï¼Œé€ä¸ªè¯»å‡ºæ•°æ®
     
-    readAddr++;                                     //Òª¶Á³ö×Ö½ÚµÄµØÖ·¼Ó1
-    pBuf++;                                         //×Ö½ÚÖ¸Õë¼Ó1
+    readAddr++;                                     //è¦è¯»å‡ºå­—èŠ‚çš„åœ°å€åŠ 1
+    pBuf++;                                         //å­—èŠ‚æŒ‡é’ˆåŠ 1
   }  
 } 
 
 /*********************************************************************************************************
-*                                              APIº¯ÊıÊµÏÖ
+*                                              APIå‡½æ•°å®ç°
 *********************************************************************************************************/
 /*********************************************************************************************************
-* º¯ÊıÃû³Æ: InitExtSRAM
-* º¯Êı¹¦ÄÜ: ³õÊ¼»¯Íâ²¿SRAM
-* ÊäÈë²ÎÊı: void 
-* Êä³ö²ÎÊı: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ:
+* å‡½æ•°åç§°: InitExtSRAM
+* å‡½æ•°åŠŸèƒ½: åˆå§‹åŒ–å¤–éƒ¨SRAM
+* è¾“å…¥å‚æ•°: void 
+* è¾“å‡ºå‚æ•°: void
+* è¿” å› å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„:
 *********************************************************************************************************/
 void InitExtSRAM(void)
 {  
-  i32 i;   //¶¨ÒåÒ»¸öi32ÀàĞÍµÄ±äÁ¿i£¬×÷ÎªÑ­»·¼ÆÊıÆ÷
+  i32 i;   //å®šä¹‰ä¸€ä¸ªi32ç±»å‹çš„å˜é‡iï¼Œä½œä¸ºå¾ªç¯è®¡æ•°å™¨
 
-  GPIO_InitTypeDef               GPIO_InitStructure;     //¶¨Òå½á¹¹ÌåGPIO_InitStructure,ÓÃÀ´ÅäÖÃFSMCµÄGPIO
-  //¶¨Òå½á¹¹ÌåFSMC_NORSRAMInitStructure£¬ÓÃÀ´ÅäÖÃFSMC£¨¿É±ä¾²Ì¬´æ´¢¿ØÖÆÆ÷£©µÄ²ÎÊı
+  GPIO_InitTypeDef               GPIO_InitStructure;     //å®šä¹‰ç»“æ„ä½“GPIO_InitStructure,ç”¨æ¥é…ç½®FSMCçš„GPIO
+  //å®šä¹‰ç»“æ„ä½“FSMC_NORSRAMInitStructureï¼Œç”¨æ¥é…ç½®FSMCï¼ˆå¯å˜é™æ€å­˜å‚¨æ§åˆ¶å™¨ï¼‰çš„å‚æ•°
   FSMC_NORSRAMInitTypeDef        FSMC_NORSRAMInitStructure;
-  FSMC_NORSRAMTimingInitTypeDef  readWriteTiming;        //¶¨Òå½á¹¹ÌåreadWriteTiming£¬ÓÃÀ´ÅäÖÃFSMCµÄÊ±Ğò²ÎÊı
+  FSMC_NORSRAMTimingInitTypeDef  readWriteTiming;        //å®šä¹‰ç»“æ„ä½“readWriteTimingï¼Œç”¨æ¥é…ç½®FSMCçš„æ—¶åºå‚æ•°
  
-  //Ê¹ÄÜGPIOD¡¢GPIOE¡¢GPIOF¡¢GPIOGµÄÊ±ÖÓ£¨¸ù¾İÔ­ÀíÍ¼À´ÅäÖÃÊ¹ÓÃGPIO¶Ë¿Ú£©
+  //ä½¿èƒ½GPIODã€GPIOEã€GPIOFã€GPIOGçš„æ—¶é’Ÿï¼ˆæ ¹æ®åŸç†å›¾æ¥é…ç½®ä½¿ç”¨GPIOç«¯å£ï¼‰
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD | RCC_APB2Periph_GPIOE |     
                          RCC_APB2Periph_GPIOF | RCC_APB2Periph_GPIOG, ENABLE);
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_FSMC, ENABLE);     //Ê¹ÄÜFSMCµÄÊ±ÖÓ
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_FSMC, ENABLE);     //ä½¿èƒ½FSMCçš„æ—¶é’Ÿ
   
-  //Çë²é¿´ stm32f10x_gpio.h À´Ëã³ö GPIO_Pin_x ¶ÔÓ¦µÄ uint16_t ÀàĞÍµÄÊıÖµ£¬È»ºóÏà¼Ó¡£
-  //ÒÔÏÂµÄGPIODÒı½Å°´Ë³ĞòÒÀ´Î¶ÔÓ¦FSMC_D2¡¢D3¡¢NOE¡¢NWE¡¢D13¡¢D14¡¢D15¡¢A16¡¢A17¡¢A18¡¢D0¡¢D1
-  GPIO_InitStructure.GPIO_Pin   = 0xFF33;           //ÉèÖÃ¶ÔÓ¦µÄÒı½Å£ºPD0¡¢1¡¢4¡¢5¡¢8-15
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; //ÉèÖÃI/O¿ÚËÙÂÊÎª50MHz
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF_PP;  //¸´ÓÃÍÆÍìÊä³öÄ£Ê½
-  GPIO_Init(GPIOD, &GPIO_InitStructure);            //¸ù¾İ²ÎÊı³õÊ¼»¯GPIOD¶Ë¿Ú
+  //è¯·æŸ¥çœ‹ stm32f10x_gpio.h æ¥ç®—å‡º GPIO_Pin_x å¯¹åº”çš„ uint16_t ç±»å‹çš„æ•°å€¼ï¼Œç„¶åç›¸åŠ ã€‚
+  //ä»¥ä¸‹çš„GPIODå¼•è„šæŒ‰é¡ºåºä¾æ¬¡å¯¹åº”FSMC_D2ã€D3ã€NOEã€NWEã€D13ã€D14ã€D15ã€A16ã€A17ã€A18ã€D0ã€D1
+  GPIO_InitStructure.GPIO_Pin   = 0xFF33;           //è®¾ç½®å¯¹åº”çš„å¼•è„šï¼šPD0ã€1ã€4ã€5ã€8-15
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; //è®¾ç½®I/Oå£é€Ÿç‡ä¸º50MHz
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF_PP;  //å¤ç”¨æ¨æŒ½è¾“å‡ºæ¨¡å¼
+  GPIO_Init(GPIOD, &GPIO_InitStructure);            //æ ¹æ®å‚æ•°åˆå§‹åŒ–GPIODç«¯å£
 
-  //ÒÔÏÂµÄGPIOEÒı½Å°´Ë³ĞòÒÀ´Î¶ÔÓ¦FSMC_NBL0¡¢NBL1¡¢D4-D12
-  GPIO_InitStructure.GPIO_Pin = 0xFF83;             //ÉèÖÃ¶ÔÓ¦µÄÒı½Å£ºPE0¡¢1¡¢7-15
-  GPIO_Init(GPIOE, &GPIO_InitStructure);            //¸ù¾İ²ÎÊı³õÊ¼»¯GPIOE¶Ë¿Ú
+  //ä»¥ä¸‹çš„GPIOEå¼•è„šæŒ‰é¡ºåºä¾æ¬¡å¯¹åº”FSMC_NBL0ã€NBL1ã€D4-D12
+  GPIO_InitStructure.GPIO_Pin = 0xFF83;             //è®¾ç½®å¯¹åº”çš„å¼•è„šï¼šPE0ã€1ã€7-15
+  GPIO_Init(GPIOE, &GPIO_InitStructure);            //æ ¹æ®å‚æ•°åˆå§‹åŒ–GPIOEç«¯å£
 
-  //ÒÔÏÂµÄGPIOFÒı½Å°´Ë³ĞòÒÀ´Î¶ÔÓ¦FSMC_A0-A5¡¢A6-A9
-  GPIO_InitStructure.GPIO_Pin = 0xF03F;             //ÉèÖÃ¶ÔÓ¦µÄÒı½Å£ºPF0-5¡¢PF12-15
-  GPIO_Init(GPIOF, &GPIO_InitStructure);            //¸ù¾İ²ÎÊı³õÊ¼»¯GPIOF¶Ë¿Ú
+  //ä»¥ä¸‹çš„GPIOFå¼•è„šæŒ‰é¡ºåºä¾æ¬¡å¯¹åº”FSMC_A0-A5ã€A6-A9
+  GPIO_InitStructure.GPIO_Pin = 0xF03F;             //è®¾ç½®å¯¹åº”çš„å¼•è„šï¼šPF0-5ã€PF12-15
+  GPIO_Init(GPIOF, &GPIO_InitStructure);            //æ ¹æ®å‚æ•°åˆå§‹åŒ–GPIOFç«¯å£
 
-  //ÒÔÏÂµÄGPIOGÒı½Å°´Ë³ĞòÒÀ´Î¶ÔÓ¦FSMC_A10-A15¡¢NE3
-  GPIO_InitStructure.GPIO_Pin = 0x043F;             //ÉèÖÃ¶ÔÓ¦µÄÒı½Å£ºPG0-5¡¢9¡¢10¡¢12
-  GPIO_Init(GPIOG, &GPIO_InitStructure);            //¸ù¾İ²ÎÊı³õÊ¼»¯GPIOG¶Ë¿Ú
+  //ä»¥ä¸‹çš„GPIOGå¼•è„šæŒ‰é¡ºåºä¾æ¬¡å¯¹åº”FSMC_A10-A15ã€NE3
+  GPIO_InitStructure.GPIO_Pin = 0x043F;             //è®¾ç½®å¯¹åº”çš„å¼•è„šï¼šPG0-5ã€9ã€10ã€12
+  GPIO_Init(GPIOG, &GPIO_InitStructure);            //æ ¹æ®å‚æ•°åˆå§‹åŒ–GPIOGç«¯å£
            
-  readWriteTiming.FSMC_AddressSetupTime = 0x00;     //µØÖ·½¨Á¢Ê±¼ä£¨ADDSET£©Îª1¸öHCLK 1/36M=27ns
-  readWriteTiming.FSMC_AddressHoldTime  = 0x00;     //µØÖ·±£³ÖÊ±¼ä£¨ADDHLD£©Ä£Ê½AÎ´ÓÃµ½  
-  readWriteTiming.FSMC_DataSetupTime    = 0x03;     //Êı¾İ±£³ÖÊ±¼ä£¨DATAST£©Îª3¸öHCLK 4/72M=55ns(¶ÔEMµÄSRAMĞ¾Æ¬)   
-  readWriteTiming.FSMC_BusTurnAroundDuration = 0x00;//×ÜÏß»Ö¸´Ê±¼ä
-  readWriteTiming.FSMC_CLKDivision = 0x00;          //Ê±ÖÓ·ÖÆµÒò×Ó
-  readWriteTiming.FSMC_DataLatency = 0x00;          //Êı¾İ²úÉúÊ±¼ä
-  readWriteTiming.FSMC_AccessMode  = FSMC_AccessMode_A; //Òì²½Ä£Ê½A£¨FSMC_NOR¿ØÖÆÆ÷Ê±ĞòÄ£Ê½£©  
+  readWriteTiming.FSMC_AddressSetupTime = 0x00;     //åœ°å€å»ºç«‹æ—¶é—´ï¼ˆADDSETï¼‰ä¸º1ä¸ªHCLK 1/36M=27ns
+  readWriteTiming.FSMC_AddressHoldTime  = 0x00;     //åœ°å€ä¿æŒæ—¶é—´ï¼ˆADDHLDï¼‰æ¨¡å¼Aæœªç”¨åˆ°  
+  readWriteTiming.FSMC_DataSetupTime    = 0x03;     //æ•°æ®ä¿æŒæ—¶é—´ï¼ˆDATASTï¼‰ä¸º3ä¸ªHCLK 4/72M=55ns(å¯¹EMçš„SRAMèŠ¯ç‰‡)   
+  readWriteTiming.FSMC_BusTurnAroundDuration = 0x00;//æ€»çº¿æ¢å¤æ—¶é—´
+  readWriteTiming.FSMC_CLKDivision = 0x00;          //æ—¶é’Ÿåˆ†é¢‘å› å­
+  readWriteTiming.FSMC_DataLatency = 0x00;          //æ•°æ®äº§ç”Ÿæ—¶é—´
+  readWriteTiming.FSMC_AccessMode  = FSMC_AccessMode_A; //å¼‚æ­¥æ¨¡å¼Aï¼ˆFSMC_NORæ§åˆ¶å™¨æ—¶åºæ¨¡å¼ï¼‰  
  
-  FSMC_NORSRAMInitStructure.FSMC_Bank = FSMC_Bank1_NORSRAM3;                      //Ê¹ÓÃÁËFSMCµÄBANK1µÄÇøÓò3
-  FSMC_NORSRAMInitStructure.FSMC_DataAddressMux = FSMC_DataAddressMux_Disable;    //½ûÖ¹µØÖ·/Êı¾İÏß¸´ÓÃ
-  FSMC_NORSRAMInitStructure.FSMC_MemoryType = FSMC_MemoryType_SRAM;               //´æ´¢Æ÷ÀàĞÍÎªSRAM
-  FSMC_NORSRAMInitStructure.FSMC_MemoryDataWidth = FSMC_MemoryDataWidth_16b;      //´æ´¢Æ÷Êı¾İ¿í¶ÈÎª16bit  
-  FSMC_NORSRAMInitStructure.FSMC_BurstAccessMode = FSMC_BurstAccessMode_Disable;  //¹Ø±ÕÍ»·¢Ä£Ê½·ÃÎÊ
-  FSMC_NORSRAMInitStructure.FSMC_WaitSignalPolarity = FSMC_WaitSignalPolarity_Low;//µØÖ·ÏßµÄµÈ´ı×´Ì¬µçÆ½
-  //ÔÚÒì²½´«Êä×´Ì¬Ê±£¬¹Ø±ÕµÈ´ıĞÅºÅ£¨½öÊÊÓÃÓÚÒì²½ÉÁ´æ£©
+  FSMC_NORSRAMInitStructure.FSMC_Bank = FSMC_Bank1_NORSRAM3;                      //ä½¿ç”¨äº†FSMCçš„BANK1çš„åŒºåŸŸ3
+  FSMC_NORSRAMInitStructure.FSMC_DataAddressMux = FSMC_DataAddressMux_Disable;    //ç¦æ­¢åœ°å€/æ•°æ®çº¿å¤ç”¨
+  FSMC_NORSRAMInitStructure.FSMC_MemoryType = FSMC_MemoryType_SRAM;               //å­˜å‚¨å™¨ç±»å‹ä¸ºSRAM
+  FSMC_NORSRAMInitStructure.FSMC_MemoryDataWidth = FSMC_MemoryDataWidth_16b;      //å­˜å‚¨å™¨æ•°æ®å®½åº¦ä¸º16bit  
+  FSMC_NORSRAMInitStructure.FSMC_BurstAccessMode = FSMC_BurstAccessMode_Disable;  //å…³é—­çªå‘æ¨¡å¼è®¿é—®
+  FSMC_NORSRAMInitStructure.FSMC_WaitSignalPolarity = FSMC_WaitSignalPolarity_Low;//åœ°å€çº¿çš„ç­‰å¾…çŠ¶æ€ç”µå¹³
+  //åœ¨å¼‚æ­¥ä¼ è¾“çŠ¶æ€æ—¶ï¼Œå…³é—­ç­‰å¾…ä¿¡å·ï¼ˆä»…é€‚ç”¨äºå¼‚æ­¥é—ªå­˜ï¼‰
   FSMC_NORSRAMInitStructure.FSMC_AsynchronousWait = FSMC_AsynchronousWait_Disable;
-  FSMC_NORSRAMInitStructure.FSMC_WrapMode = FSMC_WrapMode_Disable;                //²»Ê¹ÄÜ»·»ØÄ£Ê½
-  FSMC_NORSRAMInitStructure.FSMC_WaitSignalActive = FSMC_WaitSignalActive_BeforeWaitState;//ÔÚµÈ´ı×´Ì¬Ç°·¢ËÍµÈ´ıĞÅºÅ  
-  FSMC_NORSRAMInitStructure.FSMC_WriteOperation = FSMC_WriteOperation_Enable;     //ÉèÖÃ´æ´¢Æ÷Ğ´Ê¹ÄÜ
-  FSMC_NORSRAMInitStructure.FSMC_WaitSignal = FSMC_WaitSignal_Disable;            //¹Ø±ÕµÈ´ıĞÅºÅ
-  FSMC_NORSRAMInitStructure.FSMC_ExtendedMode = FSMC_ExtendedMode_Disable;        //²»Ê¹ÓÃÊ±ĞòÀ©Õ¹Ä£Ê½£¬Ê¹ÓÃ¶ÁĞ´Í¬Ê±Ğò 
-  FSMC_NORSRAMInitStructure.FSMC_WriteBurst = FSMC_WriteBurst_Disable;            //²»Ê¹ÓÃÍ»·¢Ğ´Ä£Ê½
-  FSMC_NORSRAMInitStructure.FSMC_ReadWriteTimingStruct = &readWriteTiming;        //ÉèÖÃ¶ÁĞ´·ÃÎÊÊ±Ğò£¨¹Ø±ÕÀ©Õ¹Ä£Ê½Çé¿öÏÂ£©
-  FSMC_NORSRAMInitStructure.FSMC_WriteTimingStruct = &readWriteTiming;            //ÉèÖÃĞ´·ÃÎÊÊ±Ğò£¨´ò¿ªÀ©Õ¹Ä£Ê½Çé¿öÏÂ£©
+  FSMC_NORSRAMInitStructure.FSMC_WrapMode = FSMC_WrapMode_Disable;                //ä¸ä½¿èƒ½ç¯å›æ¨¡å¼
+  FSMC_NORSRAMInitStructure.FSMC_WaitSignalActive = FSMC_WaitSignalActive_BeforeWaitState;//åœ¨ç­‰å¾…çŠ¶æ€å‰å‘é€ç­‰å¾…ä¿¡å·  
+  FSMC_NORSRAMInitStructure.FSMC_WriteOperation = FSMC_WriteOperation_Enable;     //è®¾ç½®å­˜å‚¨å™¨å†™ä½¿èƒ½
+  FSMC_NORSRAMInitStructure.FSMC_WaitSignal = FSMC_WaitSignal_Disable;            //å…³é—­ç­‰å¾…ä¿¡å·
+  FSMC_NORSRAMInitStructure.FSMC_ExtendedMode = FSMC_ExtendedMode_Disable;        //ä¸ä½¿ç”¨æ—¶åºæ‰©å±•æ¨¡å¼ï¼Œä½¿ç”¨è¯»å†™åŒæ—¶åº 
+  FSMC_NORSRAMInitStructure.FSMC_WriteBurst = FSMC_WriteBurst_Disable;            //ä¸ä½¿ç”¨çªå‘å†™æ¨¡å¼
+  FSMC_NORSRAMInitStructure.FSMC_ReadWriteTimingStruct = &readWriteTiming;        //è®¾ç½®è¯»å†™è®¿é—®æ—¶åºï¼ˆå…³é—­æ‰©å±•æ¨¡å¼æƒ…å†µä¸‹ï¼‰
+  FSMC_NORSRAMInitStructure.FSMC_WriteTimingStruct = &readWriteTiming;            //è®¾ç½®å†™è®¿é—®æ—¶åºï¼ˆæ‰“å¼€æ‰©å±•æ¨¡å¼æƒ…å†µä¸‹ï¼‰
 
-  FSMC_NORSRAMInit(&FSMC_NORSRAMInitStructure);  //¸ù¾İ²ÎÊı³õÊ¼»¯FSMCÅäÖÃ
+  FSMC_NORSRAMInit(&FSMC_NORSRAMInitStructure);  //æ ¹æ®å‚æ•°åˆå§‹åŒ–FSMCé…ç½®
 
-  FSMC_NORSRAMCmd(FSMC_Bank1_NORSRAM3, ENABLE);  //Ê¹ÄÜBANK1µÄÇøÓò3
+  FSMC_NORSRAMCmd(FSMC_Bank1_NORSRAM3, ENABLE);  //ä½¿èƒ½BANK1çš„åŒºåŸŸ3
   
-  for(i = 0; i < 250000; i++) //i´Ó0¼ÆÊıµ½249999
+  for(i = 0; i < 250000; i++) //iä»0è®¡æ•°åˆ°249999
   {
-    s_arrSRAM[i] = i;         //i´æ·Åµ½Êı×és_arrSRAM[i]                   
+    s_arrSRAM[i] = i;         //iå­˜æ”¾åˆ°æ•°ç»„s_arrSRAM[i]                   
   }
 }
     
 /*********************************************************************************************************
-* º¯ÊıÃû³Æ: ExtSRAMTestWrite
-* º¯Êı¹¦ÄÜ: ²âÊÔº¯Êı,ÔÚÖ¸¶¨µØÖ·Ğ´Èë1¸ö×Ö½Ú
-* ÊäÈë²ÎÊı: addr:µØÖ·,data:ÒªĞ´ÈëµÄÊı¾İ
-* Êä³ö²ÎÊı: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ:
+* å‡½æ•°åç§°: ExtSRAMTestWrite
+* å‡½æ•°åŠŸèƒ½: æµ‹è¯•å‡½æ•°,åœ¨æŒ‡å®šåœ°å€å†™å…¥1ä¸ªå­—èŠ‚
+* è¾“å…¥å‚æ•°: addr:åœ°å€,data:è¦å†™å…¥çš„æ•°æ®
+* è¾“å‡ºå‚æ•°: void
+* è¿” å› å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„:
 *********************************************************************************************************/
 void ExtSRAMTestWrite(u32 addr, u8 data)
 {         
-  ExtSRAMWriteBuf(&data, addr, 1);  //´ÓµØÖ·addr´¦¿ªÊ¼Ğ´Èë1×Ö½ÚµÄÊı¾İdata£¨&dataÎªÊı¾İµÄµØÖ·£©
+  ExtSRAMWriteBuf(&data, addr, 1);  //ä»åœ°å€addrå¤„å¼€å§‹å†™å…¥1å­—èŠ‚çš„æ•°æ®dataï¼ˆ&dataä¸ºæ•°æ®çš„åœ°å€ï¼‰
 }
 
 /*********************************************************************************************************
-* º¯ÊıÃû³Æ: ExtSRAMTestWrite
-* º¯Êı¹¦ÄÜ: ¶ÁÈ¡1¸ö×Ö½Ú
-* ÊäÈë²ÎÊı: addr:µØÖ·
-* Êä³ö²ÎÊı: void
-* ·µ »Ø Öµ: ¶ÁÈ¡µ½µÄÊı¾İ
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ:
+* å‡½æ•°åç§°: ExtSRAMTestWrite
+* å‡½æ•°åŠŸèƒ½: è¯»å–1ä¸ªå­—èŠ‚
+* è¾“å…¥å‚æ•°: addr:åœ°å€
+* è¾“å‡ºå‚æ•°: void
+* è¿” å› å€¼: è¯»å–åˆ°çš„æ•°æ®
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„:
 *********************************************************************************************************/
 u8 ExtSRAMTestRead(u32 addr)
 {
-  u8 data;                        //¶¨ÒåÒ»¸öu8ÀàĞÍµÄ±äÁ¿data×÷ÎªÊı¾İ´¢Æ÷
+  u8 data;                        //å®šä¹‰ä¸€ä¸ªu8ç±»å‹çš„å˜é‡dataä½œä¸ºæ•°æ®å‚¨å™¨
   
-  ExtSRAMReadBuf(&data, addr, 1); //´ÓµØÖ·addr´¦¿ªÊ¼¶Á³ö1×Ö½ÚµÄÊı¾İ£¬´æ·Åµ½data                 
+  ExtSRAMReadBuf(&data, addr, 1); //ä»åœ°å€addrå¤„å¼€å§‹è¯»å‡º1å­—èŠ‚çš„æ•°æ®ï¼Œå­˜æ”¾åˆ°data                 
   
-  return data;                    //·µ»Ødata
+  return data;                    //è¿”å›data
 }  
    
 /*********************************************************************************************************
-* º¯ÊıÃû³Æ: ExtSRAMTest1
-* º¯Êı¹¦ÄÜ: Íâ²¿ÄÚ´æ²âÊÔ(×î´óÖ§³Ö1M×Ö½ÚÄÚ´æ²âÊÔ)
-* ÊäÈë²ÎÊı: x,y
-* Êä³ö²ÎÊı: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ:
+* å‡½æ•°åç§°: ExtSRAMTest1
+* å‡½æ•°åŠŸèƒ½: å¤–éƒ¨å†…å­˜æµ‹è¯•(æœ€å¤§æ”¯æŒ1Må­—èŠ‚å†…å­˜æµ‹è¯•)
+* è¾“å…¥å‚æ•°: x,y
+* è¾“å‡ºå‚æ•°: void
+* è¿” å› å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„:
 *********************************************************************************************************/
 void ExtSRAMTest1(u16 x, u16 y)
 {  
-  u32  i = 0;                           //¶¨ÒåÒ»¸öu32ÀàĞÍµÄ±äÁ¿i£¬×÷ÎªÑ­»·¼ÆÊıÆ÷
-  u8  temp = 0;                         //¶¨ÒåÒ»¸öu8ÀàĞÍµÄ±äÁ¿temp£¬×÷ÎªÊı¾İ´¢Æ÷
-  u8  sval = 0;                         //¶¨ÒåÒ»¸öu8ÀàĞÍµÄ±äÁ¿sval£¬¼ÇÂ¼ÔÚµØÖ·0´¦¶Áµ½µÄÊı¾İ               
+  u32  i = 0;                           //å®šä¹‰ä¸€ä¸ªu32ç±»å‹çš„å˜é‡iï¼Œä½œä¸ºå¾ªç¯è®¡æ•°å™¨
+  u8  temp = 0;                         //å®šä¹‰ä¸€ä¸ªu8ç±»å‹çš„å˜é‡tempï¼Œä½œä¸ºæ•°æ®å‚¨å™¨
+  u8  sval = 0;                         //å®šä¹‰ä¸€ä¸ªu8ç±»å‹çš„å˜é‡svalï¼Œè®°å½•åœ¨åœ°å€0å¤„è¯»åˆ°çš„æ•°æ®               
   
-  //ÔÚLCDÉÏµÄÖ¸¶¨Æğµã×ø±êx£¬y´¦µÄÒ»¿éÇøÓò´óĞ¡Îªwidth£º239£¬heigh£ºy + 16µÄµØ·½
-  //ÏÔÊ¾×ÖÌå´óĞ¡Îª16µÄ×Ö·û´®"Ex Memory Test:   0KB"
+  //åœ¨LCDä¸Šçš„æŒ‡å®šèµ·ç‚¹åæ ‡xï¼Œyå¤„çš„ä¸€å—åŒºåŸŸå¤§å°ä¸ºwidthï¼š239ï¼Œheighï¼šy + 16çš„åœ°æ–¹
+  //æ˜¾ç¤ºå­—ä½“å¤§å°ä¸º16çš„å­—ç¬¦ä¸²"Ex Memory Test:   0KB"
   LCDShowString(x, y, 239, y + 16, 16, "Ex Memory Test:   0KB");
     
-  for(i = 0; i < 1024 * 1024; i += 4096)//´Ó0µØÖ·¿ªÊ¼£¬Ã¿¸ô4K×Ö½Ú,Ğ´ÈëÒ»¸öÊı¾İ,×Ü¹²Ğ´Èë256¸öÊı¾İ,¸ÕºÃÊÇ1M×Ö½Ú
+  for(i = 0; i < 1024 * 1024; i += 4096)//ä»0åœ°å€å¼€å§‹ï¼Œæ¯éš”4Kå­—èŠ‚,å†™å…¥ä¸€ä¸ªæ•°æ®,æ€»å…±å†™å…¥256ä¸ªæ•°æ®,åˆšå¥½æ˜¯1Må­—èŠ‚
   {
-    ExtSRAMWriteBuf(&temp, i, 1);       //ÔÚµØÖ·i´¦Ğ´Èë1×Ö½ÚµÄÊı¾İtemp
+    ExtSRAMWriteBuf(&temp, i, 1);       //åœ¨åœ°å€iå¤„å†™å…¥1å­—èŠ‚çš„æ•°æ®temp
     
-    temp++;                             //temp¼Ó1
+    temp++;                             //tempåŠ 1
   }
         
-  for(i = 0; i < 1024 * 1024; i += 4096)//ÒÀ´Î¶Á³öÖ®Ç°Ğ´ÈëµÄÊı¾İ,½øĞĞĞ£Ñé 
+  for(i = 0; i < 1024 * 1024; i += 4096)//ä¾æ¬¡è¯»å‡ºä¹‹å‰å†™å…¥çš„æ•°æ®,è¿›è¡Œæ ¡éªŒ 
   {
-    ExtSRAMReadBuf(&temp, i, 1);        //´ÓµØÖ·i´¦¶Á³ö1×Ö½ÚµÄÊı¾İ·ÅÈëtemp
+    ExtSRAMReadBuf(&temp, i, 1);        //ä»åœ°å€iå¤„è¯»å‡º1å­—èŠ‚çš„æ•°æ®æ”¾å…¥temp
     
     if(i == 0)
     {
-      sval = temp;                      //¼ÇÂ¼ÔÚµØÖ·0¶Áµ½µÄÊı¾İµ½sval
+      sval = temp;                      //è®°å½•åœ¨åœ°å€0è¯»åˆ°çš„æ•°æ®åˆ°sval
     }
-    else if(temp <= sval)               //ºóÃæ¶Á³öµÄÄ³¸öÊı¾İ±ÈµØÖ·0´¦¶Áµ½µÄÊı¾İĞ¡
+    else if(temp <= sval)               //åé¢è¯»å‡ºçš„æŸä¸ªæ•°æ®æ¯”åœ°å€0å¤„è¯»åˆ°çš„æ•°æ®å°
     {
       break;
     } 
  
-    //ÔÚLCDÉÏµÄÖ¸¶¨Æğµã×ø±êx + 15 * 8£¬y´¦ÏÔÊ¾Î»ÊıÎª4£¬×ÖÌå´óĞ¡Îª16µÄÊı×Ö(u16)(temp - sval + 1) * 4
-    //ÆäÖĞ0´ú±í²»Ìî³äµÄ·Çµş¼ÓÏÔÊ¾£¬¼´ÔÚ¡°Test£º¡±ºóÃæÏÔÊ¾ÄÚ´æµÄÈİÁ¿
+    //åœ¨LCDä¸Šçš„æŒ‡å®šèµ·ç‚¹åæ ‡x + 15 * 8ï¼Œyå¤„æ˜¾ç¤ºä½æ•°ä¸º4ï¼Œå­—ä½“å¤§å°ä¸º16çš„æ•°å­—(u16)(temp - sval + 1) * 4
+    //å…¶ä¸­0ä»£è¡¨ä¸å¡«å……çš„éå åŠ æ˜¾ç¤ºï¼Œå³åœ¨â€œTestï¼šâ€åé¢æ˜¾ç¤ºå†…å­˜çš„å®¹é‡
     LCDShowxNum(x + 15 * 8, y, (u16)(temp - sval + 1) * 4, 4, 16, 0);  
   }  
 }
 
 /*********************************************************************************************************
-* º¯ÊıÃû³Æ: ExtSRAMTest2
-* º¯Êı¹¦ÄÜ: Íâ²¿ÄÚ´æ²âÊÔ(×î´óÖ§³Ö1M×Ö½ÚÄÚ´æ²âÊÔ)
-* ÊäÈë²ÎÊı: void
-* Êä³ö²ÎÊı: void
-* ·µ »Ø Öµ: ¶ÁÈ¡µ½µÄÊı¾İ
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: 
+* å‡½æ•°åç§°: ExtSRAMTest2
+* å‡½æ•°åŠŸèƒ½: å¤–éƒ¨å†…å­˜æµ‹è¯•(æœ€å¤§æ”¯æŒ1Må­—èŠ‚å†…å­˜æµ‹è¯•)
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å› å€¼: è¯»å–åˆ°çš„æ•°æ®
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: 
 *********************************************************************************************************/
 void ExtSRAMTest2(void)
 {  
-  i32 i;                                                  //¶¨ÒåÒ»¸öi32ÀàĞÍµÄ±äÁ¿i£¬×÷ÎªÑ­»·¼ÆÊıÆ÷
+  i32 i;                                                  //å®šä¹‰ä¸€ä¸ªi32ç±»å‹çš„å˜é‡iï¼Œä½œä¸ºå¾ªç¯è®¡æ•°å™¨
       
-  //´Ë´¦ÊÇÒ»¸öBUG£¬ÔÚÊ¹ÓÃExtSRAMTest1ºó,ÔÙÓÃExtSRAMTest2º¯Êı»á³öÏÖÃ¿¸ô1024³öÏÖÒ»´ÎiÓës_arrSRAM[i]²»Ïà·û£¬
-  //ÆäÖĞs_arrSRAM[i] - i = n£¬nÎªµÚ¼¸´Î³öÏÖBUG£¬ËùÒÔÍ¨¹ıÖØĞÂĞ´ÈëÆÁ±Î´ËBUG£¬¿ÉÒÔË³ÀûÏÔÊ¾µ½249999
-  //£¨Ô­ÒòÊÇÔÚÓÃExtSRAMTest1µÄ¸³ÖµÖĞ¸øÃ¿1024¸öÔªËØµÍ8Î»¼ÓÉÏÁËn£©
+  //æ­¤å¤„æ˜¯ä¸€ä¸ªBUGï¼Œåœ¨ä½¿ç”¨ExtSRAMTest1å,å†ç”¨ExtSRAMTest2å‡½æ•°ä¼šå‡ºç°æ¯éš”1024å‡ºç°ä¸€æ¬¡iä¸s_arrSRAM[i]ä¸ç›¸ç¬¦ï¼Œ
+  //å…¶ä¸­s_arrSRAM[i] - i = nï¼Œnä¸ºç¬¬å‡ æ¬¡å‡ºç°BUGï¼Œæ‰€ä»¥é€šè¿‡é‡æ–°å†™å…¥å±è”½æ­¤BUGï¼Œå¯ä»¥é¡ºåˆ©æ˜¾ç¤ºåˆ°249999
+  //ï¼ˆåŸå› æ˜¯åœ¨ç”¨ExtSRAMTest1çš„èµ‹å€¼ä¸­ç»™æ¯1024ä¸ªå…ƒç´ ä½8ä½åŠ ä¸Šäº†nï¼‰
   for(i = 0; i < 250000; i += 1024)
   {
     s_arrSRAM[i] = i;
   }
   
-  for(i = 0; i < 250000; i++)                             //´ÓÊı×és_arrSRAM[]µÄ0µ½249999Î»ÖÃÒÀ´Î¶Ô±È
+  for(i = 0; i < 250000; i++)                             //ä»æ•°ç»„s_arrSRAM[]çš„0åˆ°249999ä½ç½®ä¾æ¬¡å¯¹æ¯”
   {
-    if(i != s_arrSRAM[i])                                 //ÓëÔ¤ÏÈ´æÈëµÄÊı¾İ²»·û
+    if(i != s_arrSRAM[i])                                 //ä¸é¢„å…ˆå­˜å…¥çš„æ•°æ®ä¸ç¬¦
     {
-      //ÔÚLCDÉÏµÄÖ¸¶¨Æğµã×ø±êx£º30£¬y£º210´¦µÄÒ»¿éÇøÓò´óĞ¡Îªwidth£º200£¬heigh£º16µÄµØ·½ÏÔÊ¾×Ö·û´®"SRAM Test Failed!"
+      //åœ¨LCDä¸Šçš„æŒ‡å®šèµ·ç‚¹åæ ‡xï¼š30ï¼Œyï¼š210å¤„çš„ä¸€å—åŒºåŸŸå¤§å°ä¸ºwidthï¼š200ï¼Œheighï¼š16çš„åœ°æ–¹æ˜¾ç¤ºå­—ç¬¦ä¸²"SRAM Test Failed!"
       LCDShowString(30, 210, 200, 16, 16, "SRAM Test Failed!");
 
       break;
     }
    
-    //ÔÚLCDÉÏµÄÖ¸¶¨Î»ÖÃx£º30£¬y£º190´¦ÏÔÊ¾Î»ÊıÎª6£¬×ÖÌå´óĞ¡Îª16µÄÊı×Ös_arrSRAM[i]
+    //åœ¨LCDä¸Šçš„æŒ‡å®šä½ç½®xï¼š30ï¼Œyï¼š190å¤„æ˜¾ç¤ºä½æ•°ä¸º6ï¼Œå­—ä½“å¤§å°ä¸º16çš„æ•°å­—s_arrSRAM[i]
     LCDShowxNum(30, 190, s_arrSRAM[i], 6, 16, 0);
   }
 }   
