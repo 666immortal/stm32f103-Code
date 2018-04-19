@@ -1,128 +1,128 @@
  /*********************************************************************************************************
-* Ä£¿éÃû³Æ: ADC.c
-* Õª    Òª: 
-* µ±Ç°°æ±¾: 1.0.0
-* ×÷    Õß: 
-* Íê³ÉÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ÄÚ    ÈÝ:
-* ×¢    Òâ: none                                                                  
+* æ¨¡å—åç§°: ADC.c
+* æ‘˜    è¦: 
+* å½“å‰ç‰ˆæœ¬: 1.0.0
+* ä½œ    è€…: 666immortal
+* å®Œæˆæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* å†…    å®¹:
+* æ³¨    æ„: none                                                                  
 **********************************************************************************************************
-* È¡´ú°æ±¾: 1.0.0
-* ×÷    Õß:
-* Íê³ÉÈÕÆÚ: 
-* ÐÞ¸ÄÄÚÈÝ: 
-* ÐÞ¸ÄÎÄ¼þ: 
+* å–ä»£ç‰ˆæœ¬: 1.0.0
+* ä½œ    è€…:
+* å®Œæˆæ—¥æœŸ: 
+* ä¿®æ”¹å†…å®¹: 
+* ä¿®æ”¹æ–‡ä»¶: 
 *********************************************************************************************************/
 /*********************************************************************************************************
-*                                              °üº¬Í·ÎÄ¼þ
+*                                              åŒ…å«å¤´æ–‡ä»¶
 *********************************************************************************************************/
 #include "ADC.h"
 #include "SysTick.h"
 
 /*********************************************************************************************************
-*                                              ºê¶¨Òå
+*                                              å®å®šä¹‰
 *********************************************************************************************************/ 
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿±äÁ¿
+*                                              å†…éƒ¨å˜é‡
 *********************************************************************************************************/
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊýÉùÃ÷
+*                                              å†…éƒ¨å‡½æ•°å£°æ˜Ž
 *********************************************************************************************************/
-static u16 GetADC(void);    //»ñµÃADC²ÉÑùÖµ
+static u16 GetADC(void);    //èŽ·å¾—ADCé‡‡æ ·å€¼
 
 /*********************************************************************************************************
-*                                              ÄÚ²¿º¯ÊýÊµÏÖ
+*                                              å†…éƒ¨å‡½æ•°å®žçŽ°
 *********************************************************************************************************/
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: GetADC
-* º¯Êý¹¦ÄÜ: »ñµÃADC²ÉÑùÖµ
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ:
+* å‡½æ•°åç§°: GetADC
+* å‡½æ•°åŠŸèƒ½: èŽ·å¾—ADCé‡‡æ ·å€¼
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„:
 *********************************************************************************************************/
 static u16 GetADC(void)   
 {
-  //ÉèÖÃADC,ADCÍ¨µÀ,Í¨µÀÊýÄ¿£¬²ÉÑùÊ±¼ä	
+  //è®¾ç½®ADC,ADCé€šé“,é€šé“æ•°ç›®ï¼Œé‡‡æ ·æ—¶é—´	
 	ADC_RegularChannelConfig(USER_DEFINE_ADC, USER_DEFINE_ADC_CHANNEL, 1, ADC_SampleTime_239Cycles5 );	  			    
   
-	ADC_SoftwareStartConvCmd(USER_DEFINE_ADC, ENABLE);		     //Ê¹ÄÜÖ¸¶¨µÄADCµÄÈí¼þ×ª»»Æô¶¯¹¦ÄÜ	
+	ADC_SoftwareStartConvCmd(USER_DEFINE_ADC, ENABLE);		     //ä½¿èƒ½æŒ‡å®šçš„ADCçš„è½¯ä»¶è½¬æ¢å¯åŠ¨åŠŸèƒ½	
 	 
-	while(!ADC_GetFlagStatus(USER_DEFINE_ADC, ADC_FLAG_EOC));  //µÈ´ý×ª»»½áÊø
+	while(!ADC_GetFlagStatus(USER_DEFINE_ADC, ADC_FLAG_EOC));  //ç­‰å¾…è½¬æ¢ç»“æŸ
 
-	return ADC_GetConversionValue(USER_DEFINE_ADC);	           //·µ»Ø×î½üÒ»´ÎADC¹æÔò×éµÄ×ª»»½á¹û
+	return ADC_GetConversionValue(USER_DEFINE_ADC);	           //è¿”å›žæœ€è¿‘ä¸€æ¬¡ADCè§„åˆ™ç»„çš„è½¬æ¢ç»“æžœ
 }
 
 /*********************************************************************************************************
-*                                              APIº¯ÊýÊµÏÖ
+*                                              APIå‡½æ•°å®žçŽ°
 *********************************************************************************************************/
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: InitADC
-* º¯Êý¹¦ÄÜ: ³õÊ¼»¯ADC
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ: ÕâÀïÎÒÃÇ½öÒÔ¹æÔòÍ¨µÀÎªÀý
+* å‡½æ•°åç§°: InitADC
+* å‡½æ•°åŠŸèƒ½: åˆå§‹åŒ–ADC
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„: è¿™é‡Œæˆ‘ä»¬ä»…ä»¥è§„åˆ™é€šé“ä¸ºä¾‹
 *********************************************************************************************************/													   
 void InitADC(void)
 { 	
-	ADC_InitTypeDef   ADC_InitStructure;      //¶¨Òå½á¹¹ÌåADC_InitStructure,ÓÃÀ´ÅäÖÃADC
-	GPIO_InitTypeDef  GPIO_InitStructure;     //¶¨Òå½á¹¹ÌåGPIO_InitStructure£¬ÓÃÀ´ÅäÖÃADCÍ¨µÀµÄGPIO
+	ADC_InitTypeDef   ADC_InitStructure;      //å®šä¹‰ç»“æž„ä½“ADC_InitStructure,ç”¨æ¥é…ç½®ADC
+	GPIO_InitTypeDef  GPIO_InitStructure;     //å®šä¹‰ç»“æž„ä½“GPIO_InitStructureï¼Œç”¨æ¥é…ç½®ADCé€šé“çš„GPIO
 
-	RCC_APB2PeriphClockCmd(USER_DEFINE_ADC_CLK, ENABLE );	      //Ê¹ÄÜADCµÄÊ±ÖÓ
-  RCC_APB2PeriphClockCmd(USER_DEFINE_ADC_GPIO_CLK, ENABLE);   //Ê¹ÄÜADCÍ¨µÀµÄGPIO¶Ë¿ÚÊ±ÖÓ
+	RCC_APB2PeriphClockCmd(USER_DEFINE_ADC_CLK, ENABLE );	      //ä½¿èƒ½ADCçš„æ—¶é’Ÿ
+  RCC_APB2PeriphClockCmd(USER_DEFINE_ADC_GPIO_CLK, ENABLE);   //ä½¿èƒ½ADCé€šé“çš„GPIOç«¯å£æ—¶é’Ÿ
  
-	RCC_ADCCLKConfig(USER_DEFINE_ADC_CLK_DIVE);  //ÉèÖÃADC·ÖÆµÒò×ÓÎª6£¬Ê±ÖÓÎª72M/6=12M,ADC×î´óÊ±¼ä²»ÄÜ³¬¹ý14M
+	RCC_ADCCLKConfig(USER_DEFINE_ADC_CLK_DIVE);  //è®¾ç½®ADCåˆ†é¢‘å› å­ä¸º6ï¼Œæ—¶é’Ÿä¸º72M/6=12M,ADCæœ€å¤§æ—¶é—´ä¸èƒ½è¶…è¿‡14M
                    
-	GPIO_InitStructure.GPIO_Pin = USER_DEFINE_ADC_GPIO_PIN;     //ÉèÖÃÄ£ÄâÍ¨µÀÊäÈëÒý½Å      
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;		            //Ä£ÄâÊäÈëÄ£Ê½
-	GPIO_Init(USER_DEFINE_ADC_GPIO, &GPIO_InitStructure);	      //¸ù¾Ý²ÎÊý³õÊ¼»¯ADCÍ¨µÀµÄGPIO¶Ë¿Ú
+	GPIO_InitStructure.GPIO_Pin = USER_DEFINE_ADC_GPIO_PIN;     //è®¾ç½®æ¨¡æ‹Ÿé€šé“è¾“å…¥å¼•è„š      
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;		            //æ¨¡æ‹Ÿè¾“å…¥æ¨¡å¼
+	GPIO_Init(USER_DEFINE_ADC_GPIO, &GPIO_InitStructure);	      //æ ¹æ®å‚æ•°åˆå§‹åŒ–ADCé€šé“çš„GPIOç«¯å£
                                                                  
-	ADC_DeInit(USER_DEFINE_ADC);                            //¸´Î»ADC 
-	ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;	    //ADC¹¤×÷ÔÚ¶ÀÁ¢Ä£Ê½
-	ADC_InitStructure.ADC_ScanConvMode = DISABLE;	          //Ä£Êý×ª»»¹¤×÷ÔÚµ¥Í¨µÀÄ£Ê½
-	ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;     //Ä£Êý×ª»»¹¤×÷ÔÚµ¥´Î×ª»»Ä£Ê½
-	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;   //×ª»»ÓÉÈí¼þ¶ø²»ÊÇÍâ²¿´¥·¢Æô¶¯
-	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;  //ADCÊý¾ÝÓÒ¶ÔÆë
-	ADC_InitStructure.ADC_NbrOfChannel = 1;                 //Ë³Ðò½øÐÐ¹æÔò×ª»»µÄADCÍ¨µÀµÄÊýÄ¿
-	ADC_Init(USER_DEFINE_ADC, &ADC_InitStructure);          //¸ù¾ÝADC_InitStructÖÐÖ¸¶¨µÄ²ÎÊý³õÊ¼»¯ADC   
+	ADC_DeInit(USER_DEFINE_ADC);                            //å¤ä½ADC 
+	ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;	    //ADCå·¥ä½œåœ¨ç‹¬ç«‹æ¨¡å¼
+	ADC_InitStructure.ADC_ScanConvMode = DISABLE;	          //æ¨¡æ•°è½¬æ¢å·¥ä½œåœ¨å•é€šé“æ¨¡å¼
+	ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;     //æ¨¡æ•°è½¬æ¢å·¥ä½œåœ¨å•æ¬¡è½¬æ¢æ¨¡å¼
+	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;   //è½¬æ¢ç”±è½¯ä»¶è€Œä¸æ˜¯å¤–éƒ¨è§¦å‘å¯åŠ¨
+	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;  //ADCæ•°æ®å³å¯¹é½
+	ADC_InitStructure.ADC_NbrOfChannel = 1;                 //é¡ºåºè¿›è¡Œè§„åˆ™è½¬æ¢çš„ADCé€šé“çš„æ•°ç›®
+	ADC_Init(USER_DEFINE_ADC, &ADC_InitStructure);          //æ ¹æ®ADC_InitStructä¸­æŒ‡å®šçš„å‚æ•°åˆå§‹åŒ–ADC   
 
-	ADC_Cmd(USER_DEFINE_ADC, ENABLE);	                      //Ê¹ÄÜADC
+	ADC_Cmd(USER_DEFINE_ADC, ENABLE);	                      //ä½¿èƒ½ADC
 	
-	ADC_ResetCalibration(USER_DEFINE_ADC);	                //Ê¹ÄÜ¸´Î»Ð£×¼  
+	ADC_ResetCalibration(USER_DEFINE_ADC);	                //ä½¿èƒ½å¤ä½æ ¡å‡†  
 	 
-	while(ADC_GetResetCalibrationStatus(USER_DEFINE_ADC));	//µÈ´ý¸´Î»Ð£×¼½áÊø
+	while(ADC_GetResetCalibrationStatus(USER_DEFINE_ADC));	//ç­‰å¾…å¤ä½æ ¡å‡†ç»“æŸ
 	
-	ADC_StartCalibration(USER_DEFINE_ADC);	                //¿ªÆôADÐ£×¼
+	ADC_StartCalibration(USER_DEFINE_ADC);	                //å¼€å¯ADæ ¡å‡†
  
-	while(ADC_GetCalibrationStatus(USER_DEFINE_ADC));	      //µÈ´ýÐ£×¼½áÊø
+	while(ADC_GetCalibrationStatus(USER_DEFINE_ADC));	      //ç­‰å¾…æ ¡å‡†ç»“æŸ
  
 }				
 
 /*********************************************************************************************************
-* º¯ÊýÃû³Æ: GetADCAverage
-* º¯Êý¹¦ÄÜ: ¼ÆËãADC²ÉÑùÊý¾ÝµÄÆ½¾ùÖµ
-* ÊäÈë²ÎÊý: void
-* Êä³ö²ÎÊý: void
-* ·µ »Ø Öµ: void
-* ´´½¨ÈÕÆÚ: 2018Äê03ÔÂ01ÈÕ
-* ×¢    Òâ:
+* å‡½æ•°åç§°: GetADCAverage
+* å‡½æ•°åŠŸèƒ½: è®¡ç®—ADCé‡‡æ ·æ•°æ®çš„å¹³å‡å€¼
+* è¾“å…¥å‚æ•°: void
+* è¾“å‡ºå‚æ•°: void
+* è¿” å›ž å€¼: void
+* åˆ›å»ºæ—¥æœŸ: 2018å¹´03æœˆ01æ—¥
+* æ³¨    æ„:
 *********************************************************************************************************/
 u16 GetADCAverage(u8 sampletimes)
 {
-	u32 tempVal = 0;                                  //¶¨ÒåÒ»¸ö±äÁ¿ÓÃÀ´±íÊ¾²ÉÑùÊý¾ÝÖ®ºÍ
-	u8 t;                                             //¶¨ÒåÒ»¸ö±äÁ¿Ö´ÐÐÑ­»·Óï¾ä
+	u32 tempVal = 0;                                  //å®šä¹‰ä¸€ä¸ªå˜é‡ç”¨æ¥è¡¨ç¤ºé‡‡æ ·æ•°æ®ä¹‹å’Œ
+	u8 t;                                             //å®šä¹‰ä¸€ä¸ªå˜é‡æ‰§è¡Œå¾ªçŽ¯è¯­å¥
   
-	for(t = 0; t < sampletimes; t++)                  //Ñ­»·²ÉÑù¼ÓºÍ
+	for(t = 0; t < sampletimes; t++)                  //å¾ªçŽ¯é‡‡æ ·åŠ å’Œ
 	{
-		tempVal += GetADC();                            //¶Ô²ÉÑùÊý¾Ý½øÐÐ¼ÓºÍ²¢¸³¸øtempVal
+		tempVal += GetADC();                            //å¯¹é‡‡æ ·æ•°æ®è¿›è¡ŒåŠ å’Œå¹¶èµ‹ç»™tempVal
                                               
-		DelayNms(5);                                    //ÑÓÊ±5ms
+		DelayNms(5);                                    //å»¶æ—¶5ms
 	}
   
-	return tempVal / sampletimes;                     //·µ»Ø²ÉÑùÊý¾ÝµÄÆ½¾ùÖµ
+	return tempVal / sampletimes;                     //è¿”å›žé‡‡æ ·æ•°æ®çš„å¹³å‡å€¼
 } 	 
