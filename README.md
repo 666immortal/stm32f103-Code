@@ -14,6 +14,8 @@
 ### IWDG ###
 ### KEY ###
 ### LED ###
+### Malloc ###
+### MeasureTemp ###
 ### NVIC ###
 ### RCC ###
 ### RTC ###
