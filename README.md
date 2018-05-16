@@ -17,6 +17,7 @@
 ### Malloc ###
 ### MeasureTemp ###
 ### NVIC ###
+### PWM ###
 ### RCC ###
 ### RTC ###
 ### SPI ###
