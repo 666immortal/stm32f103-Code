@@ -24,6 +24,7 @@
 ### SysTick ###
 ### Timer ###
 ### UART ###
+### WWDG ###
 ## Peripheral ##
 ### AT24Cxx ###
 ### ExtSRAM ###
